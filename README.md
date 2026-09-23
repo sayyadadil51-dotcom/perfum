@@ -5,6 +5,9 @@ A clean, modern single-page website for **Rani Kothi Lawns (रानी को�
 ## Features
 
 - 🎨 Modern editorial design — Fraunces + Inter, warm ivory/gold palette
+- 📣 **Seasonal offer banner** — fixed top bar with tag/message/CTA, dismissible (remembered), nav shifts down while visible
+- 🎠 **Testimonials carousel** — 3/2/1 cards per view, arrows + dots, auto-advance (pauses on hover), touch swipe; hidden grid kept for SEO
+- 🚀 **GitHub Pages deploy workflow** — `.github/workflows/deploy.yml` publishes on push (enable Pages → Source: GitHub Actions in repo settings)
 - 🌓 **Dark mode** — toggle in nav (◐/☾), respects system preference, no flash on load, saved
 - 🕌 **Wedding journey timeline** — Mehendi → Sangeet → Haldi → Pheras → Reception
 - 📲 **WhatsApp booking handoff** — success screen offers "Send on WhatsApp" pre-filled with the full booking summary
