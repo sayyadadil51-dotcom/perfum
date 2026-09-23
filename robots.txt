@@ -1,0 +1,6 @@
+# Rani Kothi Lawns — Nagpur wedding venue
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://sayyadadil51-dotcom.github.io/perfum/sitemap.xml

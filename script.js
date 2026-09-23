@@ -251,6 +251,7 @@
       status: "Pending",
       createdAt: new Date().toISOString(),
     };
+    lastBooking = booking;
 
     const bookings = getBookings();
     // Soft conflict check: same date already requested
@@ -330,6 +331,7 @@
       "ev5.d": "A grand finale dinner — stage, décor and full catering service.",
       "book.okTitle": "Request received!",
       "book.wa": "Send on WhatsApp ↗",
+      "book.print": "Print slip",
       "book.another": "Book another date",
       "nav.staff": "Staff",
       "gal.all": "All",
@@ -453,6 +455,7 @@
       "ev5.d": "भव्य फ़ाइनल डिनर — स्टेज, डेकोर और पूरी कैटरिंग।",
       "book.okTitle": "रिक्वेस्ट मिल गई!",
       "book.wa": "WhatsApp पर भेजें ↗",
+      "book.print": "स्लिप प्रिंट करें",
       "book.another": "एक और तारीख़ बुक करें",
       "nav.staff": "स्टाफ़",
       "gal.all": "सभी",
@@ -662,6 +665,58 @@
     if (e.key === "ArrowRight") openLightbox(lbIndex + 1);
   });
 
+  // ---------- Scroll progress + back to top ----------
+  const scrollProgress = document.getElementById("scrollProgress");
+  const backTop = document.getElementById("backTop");
+
+  function onScrollFx() {
+    const doc = document.documentElement;
+    const max = doc.scrollHeight - doc.clientHeight;
+    const pct = max > 0 ? (doc.scrollTop / max) * 100 : 0;
+    scrollProgress.style.width = pct + "%";
+    backTop.classList.toggle("show", doc.scrollTop > 600);
+  }
+  window.addEventListener("scroll", onScrollFx, { passive: true });
+  onScrollFx();
+  backTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+  // ---------- Print slip ----------
+  let lastBooking = null;
+
+  function fillPrintSlip(b) {
+    lastBooking = b;
+    const d = new Date(b.date + "T00:00:00");
+    const dateStr = d.toLocaleDateString("en-IN", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+    document.getElementById("printSlipBody").innerHTML = `
+      <tr><th>Guest name</th><td>${escapeHtml(b.name)}</td></tr>
+      <tr><th>Phone</th><td>${escapeHtml(b.phone)}</td></tr>
+      <tr><th>Event date</th><td>${escapeHtml(dateStr)}</td></tr>
+      <tr><th>Event type</th><td>${escapeHtml(b.eventType)}</td></tr>
+      <tr><th>Space</th><td>${escapeHtml(b.space)}</td></tr>
+      <tr><th>Expected guests</th><td>${escapeHtml(String(b.guests))}</td></tr>
+      ${b.message ? `<tr><th>Notes</th><td>${escapeHtml(b.message)}</td></tr>` : ""}
+    `;
+    document.getElementById("printSlipStatus").textContent = b.status || "Pending";
+    document.getElementById("printSlipRef").textContent = "RK-" + String(b.id).slice(-8);
+    document.getElementById("printSlipDate").textContent =
+      "Generated on " + new Date().toLocaleString("en-IN");
+    document.title = `Booking-Slip-${b.name.replace(/\s+/g, "-")}-Rani-Kothi`;
+    window.print();
+    document.title = "Rani Kothi Lawns — Wedding Venue in Civil Lines, Nagpur";
+  }
+
+  // print button on success screen
+  document.getElementById("printSlipBtn").addEventListener("click", () => {
+    const bookings = getBookings();
+    if (lastBooking) fillPrintSlip(lastBooking);
+    else if (bookings.length) fillPrintSlip(bookings[bookings.length - 1]);
+  });
+
   // ---------- Admin dashboard ----------
   const STATUS_CYCLE = ["Pending", "Confirmed", "Declined"];
   const adminBody = document.getElementById("adminBody");
@@ -713,6 +768,7 @@
           <td>
             <div class="admin-row-actions">
               <a class="admin-icon-btn" href="tel:${escapeHtml(b.phone)}" title="Call">📞</a>
+              <button type="button" class="admin-icon-btn" data-print="${b.id}" title="Print slip">🖨️</button>
               <button type="button" class="admin-icon-btn admin-icon-btn--danger" data-del="${b.id}" title="Delete">✕</button>
             </div>
           </td>
@@ -736,6 +792,7 @@
           renderAdmin();
           renderBookings();
         });
+        tr.querySelector("[data-print]").addEventListener("click", () => fillPrintSlip(b));
         adminBody.appendChild(tr);
       });
   }

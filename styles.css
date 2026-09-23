@@ -1570,6 +1570,130 @@ a { color: inherit; }
   .admin__search { min-width: 0; flex: 1; }
 }
 
+/* ---------- Scroll progress + back to top ---------- */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0;
+  background: linear-gradient(90deg, var(--gold), var(--rose));
+  z-index: 300;
+  transition: width 0.08s linear;
+  pointer-events: none;
+}
+.back-top {
+  position: fixed;
+  right: 22px;
+  bottom: 186px;
+  z-index: 90;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.3s;
+}
+.back-top.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.back-top:hover { background: var(--ink); color: var(--gold-light); border-color: var(--ink); }
+@media (max-width: 640px) {
+  .back-top { right: 14px; bottom: 210px; width: 40px; height: 40px; }
+}
+
+/* ---------- Print slip ---------- */
+.print-slip { display: none; }
+
+@media print {
+  body * { visibility: hidden !important; }
+  .print-slip,
+  .print-slip * { visibility: visible !important; }
+  .print-slip {
+    display: block !important;
+    position: absolute;
+    inset: 0;
+    padding: 32px 40px;
+    background: #fff !important;
+    color: #111 !important;
+    font-family: Georgia, "Times New Roman", serif;
+  }
+  .print-slip__head {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    border-bottom: 3px double #111;
+    padding-bottom: 14px;
+    margin-bottom: 20px;
+  }
+  .print-slip__mark {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    background: #111;
+    color: #d9b45c;
+    font-size: 1rem;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+  .print-slip__head h1 {
+    font-size: 1.3rem;
+    margin: 0 0 4px;
+  }
+  .print-slip__head p {
+    font-size: 0.8rem;
+    margin: 0;
+    color: #444;
+    font-family: Arial, sans-serif;
+  }
+  .print-slip h2 {
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin: 0 0 14px;
+  }
+  .print-slip__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    font-family: Arial, sans-serif;
+    margin-bottom: 26px;
+  }
+  .print-slip__table th,
+  .print-slip__table td {
+    border: 1px solid #999;
+    padding: 9px 12px;
+    text-align: left;
+  }
+  .print-slip__table th {
+    background: #f0f0f0;
+    width: 32%;
+    font-weight: 700;
+  }
+  .print-slip__foot {
+    font-size: 0.82rem;
+    font-family: Arial, sans-serif;
+    color: #333;
+    border-top: 1px solid #ccc;
+    padding-top: 14px;
+    line-height: 1.7;
+  }
+  .print-slip__sign { margin-top: 28px; }
+  .print-slip__date { margin-top: 10px; color: #666; }
+  @page { margin: 14mm; }
+}
+
 /* ---------- Floating action buttons ---------- */
 .fab-group {
   position: fixed;

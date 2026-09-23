@@ -41,6 +41,9 @@
   }
   </script>
 
+  <link rel="canonical" href="https://sayyadadil51-dotcom.github.io/perfum/" />
+  <link rel="sitemap" type="application/xml" href="sitemap.xml" />
+  <meta name="robots" content="index, follow" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -628,6 +631,7 @@
             <p id="successText">Thank you — our team will call you shortly to confirm your date.</p>
             <div class="form-success__actions">
               <a class="btn btn--wa-cta" id="waConfirm" href="#" target="_blank" rel="noopener" data-i18n="book.wa">Send on WhatsApp ↗</a>
+              <button type="button" class="btn btn--outline" id="printSlipBtn" data-i18n="book.print">Print slip</button>
               <button type="button" class="btn btn--outline" id="bookAnother" data-i18n="book.another">Book another date</button>
             </div>
           </div>
@@ -766,6 +770,29 @@
       </div>
     </div>
   </section>
+
+  <!-- ===== SCROLL PROGRESS + BACK TO TOP ===== -->
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+  <button class="back-top" id="backTop" aria-label="Back to top" title="Back to top">↑</button>
+
+  <!-- ===== PRINT SLIP (only visible when printing) ===== -->
+  <div class="print-slip" id="printSlip" aria-hidden="true">
+    <div class="print-slip__head">
+      <span class="print-slip__mark">रानी</span>
+      <div>
+        <h1>Rani Kothi Lawns · रानी कोठी लॉन्स</h1>
+        <p>237, Temple Rd, Civil Lines, Nagpur, Maharashtra 440001 · ☎ 098231 70071</p>
+      </div>
+    </div>
+    <h2>Booking Request Slip</h2>
+    <table class="print-slip__table" id="printSlipBody"></table>
+    <div class="print-slip__foot">
+      <p>Status: <strong id="printSlipStatus">Pending</strong> · Reference: <strong id="printSlipRef">—</strong></p>
+      <p>This is a request confirmation, not a confirmed reservation. Our team will call to confirm availability &amp; pricing.</p>
+      <p class="print-slip__sign">Guest signature: ______________________ &nbsp;&nbsp; Venue signature: ______________________</p>
+      <p class="print-slip__date" id="printSlipDate"></p>
+    </div>
+  </div>
 
   <!-- ===== FOOTER ===== -->
   <footer class="footer">
