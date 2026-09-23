@@ -307,6 +307,7 @@
       "nav.about": "About",
       "nav.spaces": "Spaces",
       "nav.packages": "Packages",
+      "nav.menu": "Menu",
       "nav.events": "Events",
       "nav.gallery": "Gallery",
       "nav.reviews": "Reviews",
@@ -409,6 +410,18 @@
       "offer.tag": "Monsoon Special",
       "offer.text": "15% off lawn bookings for Aug–Oct functions — limited dates left!",
       "offer.cta": "Call 098231 70071",
+      "menu.eyebrow": "Catering Menu",
+      "menu.sub": "A taste of our wedding spreads — custom menus for every function, with vegetarian and non-vegetarian spreads.",
+      "menu.veg": "🌿 Pure Veg",
+      "menu.nonveg": "🍗 Non-Veg",
+      "menu.sweets": "🍰 Sweets & Drinks",
+      "menu.starters": "Starters",
+      "menu.main": "Main Course",
+      "menu.rice": "Rice & Breads",
+      "menu.sweetsH": "Indian Sweets",
+      "menu.drinks": "Drinks",
+      "menu.desserts": "Dessert Counter",
+      "menu.note": "* Seasonal items. Final menu is finalised after tasting — call <a href=\"tel:09823170071\">098231 70071</a> or ask for a custom spread when you book.",
       "faq.eyebrow": "Good to Know",
       "faq1.q": "How many guests can Rani Kothi Lawns accommodate?",
       "faq1.a": "The garden lawn comfortably hosts up to 800 guests, and the banquet hall up to 400. Booking both spaces together works beautifully for multi-function weddings.",
@@ -435,6 +448,7 @@
       "nav.about": "परिचय",
       "nav.spaces": "जगहें",
       "nav.packages": "पैकेज",
+      "nav.menu": "मेन्यू",
       "nav.events": "फंक्शन",
       "nav.gallery": "फ़ोटो",
       "nav.reviews": "रिव्यू",
@@ -537,6 +551,18 @@
       "offer.tag": "मॉनसून स्पेशल",
       "offer.text": "अगस्त–अक्टूबर की फंक्शन बुकिंग पर लॉन पर 15% छूट — कुछ ही तारीख़ें बाकी!",
       "offer.cta": "कॉल करें 098231 70071",
+      "menu.eyebrow": "कैटरिंग मेन्यू",
+      "menu.sub": "हमारे शादी के स्वाद — हर फंक्शन के लिए कस्टम मेन्यू, शुद्ध शाकाहारी और नॉन-वेज दोनों।",
+      "menu.veg": "🌿 पूरा शाकाहारी",
+      "menu.nonveg": "🍗 नॉन-वेज",
+      "menu.sweets": "🍰 मिठाई व ड्रिंक्स",
+      "menu.starters": "स्टार्टर्स",
+      "menu.main": "मेन कोर्स",
+      "menu.rice": "चावल व रोटी",
+      "menu.sweetsH": "भारतीय मिठाई",
+      "menu.drinks": "ड्रिंक्स",
+      "menu.desserts": "डेसर्ट काउंटर",
+      "menu.note": "* मौसमी आइटम। अंतिम मेन्यू टेस्टिंग के बाद — कॉल करें <a href=\"tel:09823170071\">098231 70071</a> या बुकिंग के समय कस्टम स्प्रेड माँगिए।",
       "faq.eyebrow": "जान लीजिए",
       "faq1.q": "रानी कोठी लॉन्स में कितने मेहमान आ सकते हैं?",
       "faq1.a": "गार्डन लॉन में आराम से 800 मेहमान और बैंक्वेट हॉल में 400 तक। दोनों जगह एक साथ बुक करने पर बहु-फंक्शन शादी के लिए बढ़िया रहता है।",
@@ -687,6 +713,19 @@
   window.addEventListener("scroll", onScrollFx, { passive: true });
   onScrollFx();
   backTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+  // ---------- Catering menu tabs ----------
+  const menuTabs = [...document.querySelectorAll(".menu-tab")];
+  const menuPanels = [...document.querySelectorAll(".menu-panel")];
+  menuTabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      menuTabs.forEach((t) => t.classList.remove("active"));
+      menuPanels.forEach((p) => p.classList.remove("active"));
+      tab.classList.add("active");
+      const panel = document.querySelector(`[data-menu-panel="${tab.dataset.menu}"]`);
+      if (panel) panel.classList.add("active");
+    });
+  });
 
   // ---------- Seasonal offer banner ----------
   const offerBanner = document.getElementById("offerBanner");

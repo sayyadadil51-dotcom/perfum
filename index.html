@@ -37,7 +37,82 @@
     "geo": { "@type": "GeoCoordinates", "latitude": 21.1498, "longitude": 79.0806 },
     "openingHours": "Mo-Su 09:00-21:00",
     "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.3", "reviewCount": "1425" },
-    "priceRange": "$$$"
+    "priceRange": "$$$",
+    "hasMenu": {
+      "@type": "Menu",
+      "name": "Wedding Catering Menu",
+      "hasMenuSection": [
+        {
+          "@type": "MenuSection",
+          "name": "Starters",
+          "hasMenuItem": [
+            { "@type": "MenuItem", "name": "Paneer Tikka" },
+            { "@type": "MenuItem", "name": "Veg Seekh Kebab" },
+            { "@type": "MenuItem", "name": "Tandoori Aloo" }
+          ]
+        },
+        {
+          "@type": "MenuSection",
+          "name": "Main Course",
+          "hasMenuItem": [
+            { "@type": "MenuItem", "name": "Dal Makhani" },
+            { "@type": "MenuItem", "name": "Shahi Paneer" },
+            { "@type": "MenuItem", "name": "Veg Kolhapuri" },
+            { "@type": "MenuItem", "name": "Jeera Rice" },
+            { "@type": "MenuItem", "name": "Butter Naan" }
+          ]
+        },
+        {
+          "@type": "MenuSection",
+          "name": "Desserts",
+          "hasMenuItem": [
+            { "@type": "MenuItem", "name": "Gulab Jamun" },
+            { "@type": "MenuItem", "name": "Rasmalai" },
+            { "@type": "MenuItem", "name": "Ice Cream Counter" }
+          ]
+        }
+      ]
+    }
+  }
+  </script>
+
+  <!-- FAQ structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How many guests can Rani Kothi Lawns accommodate?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The garden lawn comfortably hosts up to 800 guests, and the banquet hall up to 400. Booking both spaces together works beautifully for multi-function weddings." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you provide catering and decoration?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes — in-house catering with menu tasting, plus full decoration (mandap, stage, floral décor and lighting). Guests rate the food as really worth tasting." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is there parking at the venue?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes, ample parking space is available on-site — one of the most praised facilities in our reviews." }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I check if my date is free?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Submit the booking form or call 098231 70071 — we confirm availability the same day. Checking availability is free with no charges." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I visit the venue before booking?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Absolutely. Walk in any day until 9 pm, or book a slot through the form so our team can show you around the lawn and hall personally." }
+      },
+      {
+        "@type": "Question",
+        "name": "Where exactly is the venue located?",
+        "acceptedAnswer": { "@type": "Answer", "text": "237, Temple Rd, Civil Lines, Nagpur, Maharashtra 440001 (Plus Code 5328+8Q) — right in the heart of Civil Lines with easy access across the city." }
+      }
+    ]
   }
   </script>
 
@@ -80,6 +155,7 @@
         <a href="#about" data-i18n="nav.about">About</a>
         <a href="#spaces" data-i18n="nav.spaces">Spaces</a>
         <a href="#packages" data-i18n="nav.packages">Packages</a>
+        <a href="#menu" data-i18n="nav.menu">Menu</a>
         <a href="#events" data-i18n="nav.events">Events</a>
         <a href="#gallery" data-i18n="nav.gallery">Gallery</a>
         <a href="#reviews" data-i18n="nav.reviews">Reviews</a>
@@ -326,6 +402,123 @@
         </article>
       </div>
       <p class="packages__note reveal" data-i18n="pkg.note">Indicative planning tiers — final pricing depends on date, season, menu and guest count. Call <a href="tel:09823170071">098231 70071</a> for this week’s rates.</p>
+    </div>
+  </section>
+
+  <!-- ===== CATERING MENU ===== -->
+  <section class="section section--tint" id="menu">
+    <div class="container">
+      <div class="section__head reveal">
+        <p class="eyebrow" data-i18n="menu.eyebrow">Catering Menu</p>
+        <h2 class="section__title">Food guests call <em>“worth tasting”</em></h2>
+        <p class="section__sub" data-i18n="menu.sub">A taste of our wedding spreads — custom menus for every function, with vegetarian and non-vegetarian spreads.</p>
+      </div>
+
+      <div class="menu-tabs reveal" role="tablist" aria-label="Menu category">
+        <button class="menu-tab active" data-menu="veg" data-i18n="menu.veg">🌿 Pure Veg</button>
+        <button class="menu-tab" data-menu="nonveg" data-i18n="menu.nonveg">🍗 Non-Veg</button>
+        <button class="menu-tab" data-menu="sweets" data-i18n="menu.sweets">🍰 Sweets &amp; Drinks</button>
+      </div>
+
+      <div class="menu-panels reveal">
+        <div class="menu-panel active" data-menu-panel="veg">
+          <div class="menu-grid">
+            <div class="menu-course">
+              <h3 data-i18n="menu.starters">Starters</h3>
+              <ul>
+                <li>Paneer Tikka <span>पनीर टिक्का</span></li>
+                <li>Veg Seekh Kebab <span>वेज सीख कबाब</span></li>
+                <li>Tandoori Aloo <span>तंदूरी आलू</span></li>
+                <li>Hara Bhara Kabab <span>हरा भरा कबाब</span></li>
+              </ul>
+            </div>
+            <div class="menu-course">
+              <h3 data-i18n="menu.main">Main Course</h3>
+              <ul>
+                <li>Dal Makhani <span>दाल मखनी</span></li>
+                <li>Shahi Paneer <span>शाही पनीर</span></li>
+                <li>Veg Kolhapuri <span>वेज कोल्हापुरी</span></li>
+                <li>Malai Kofta <span>मलाई कोफ्ता</span></li>
+              </ul>
+            </div>
+            <div class="menu-course">
+              <h3 data-i18n="menu.rice">Rice &amp; Breads</h3>
+              <ul>
+                <li>Jeera Rice <span>जीरा राइस</span></li>
+                <li>Veg Pulao <span>वेज पुलाव</span></li>
+                <li>Butter Naan <span>बटर नान</span></li>
+                <li>Tandoori Roti <span>तंदूरी रोटी</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="menu-panel" data-menu-panel="nonveg">
+          <div class="menu-grid">
+            <div class="menu-course">
+              <h3 data-i18n="menu.starters">Starters</h3>
+              <ul>
+                <li>Chicken Tikka <span>चिकन टिक्का</span></li>
+                <li>Tandoori Chicken <span>तंदूरी चिकन</span></li>
+                <li>Chicken Seekh <span>चिकन सीख</span></li>
+                <li>Fish Amritsari <span>फिश अमृतसरी</span></li>
+              </ul>
+            </div>
+            <div class="menu-course">
+              <h3 data-i18n="menu.main">Main Course</h3>
+              <ul>
+                <li>Butter Chicken <span>बटर चिकन</span></li>
+                <li>Chicken Curry <span>चिकन करी</span></li>
+                <li>Kadhai Chicken <span>कढ़ाई चिकन</span></li>
+                <li>Mutton Rogan Josh <span>मटन रोगन जोश</span></li>
+              </ul>
+            </div>
+            <div class="menu-course">
+              <h3 data-i18n="menu.rice">Rice &amp; Breads</h3>
+              <ul>
+                <li>Chicken Pulao <span>चिकन पुलाव</span></li>
+                <li>Jeera Rice <span>जीरा राइस</span></li>
+                <li>Butter Naan <span>बटर नान</span></li>
+                <li>Laccha Paratha <span>लच्छा पराठा</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="menu-panel" data-menu-panel="sweets">
+          <div class="menu-grid">
+            <div class="menu-course">
+              <h3 data-i18n="menu.sweetsH">Indian Sweets</h3>
+              <ul>
+                <li>Gulab Jamun <span>गुलाब जामुन</span></li>
+                <li>Rasmalai <span>रसमलाई</span></li>
+                <li>Moong Dal Halwa <span>मूंग दाल हलवा</span></li>
+                <li>Kaju Katli <span>काजू कतली</span></li>
+              </ul>
+            </div>
+            <div class="menu-course">
+              <h3 data-i18n="menu.drinks">Drinks</h3>
+              <ul>
+                <li>Masala Chaas <span>मसाला छास</span></li>
+                <li>Shikanji <span>शिकंजी</span></li>
+                <li>Sweet / Salted Lassi <span>मीठी / नमकीन लस्सी</span></li>
+                <li>Filter Coffee <span>फ़िल्टर कॉफ़ी</span></li>
+              </ul>
+            </div>
+            <div class="menu-course">
+              <h3 data-i18n="menu.desserts">Dessert Counter</h3>
+              <ul>
+                <li>Ice Cream Counter <span>आइसक्रीम काउंटर</span></li>
+                <li>Fresh Fruit Platter <span>ताज़े फल</span></li>
+                <li>Gajar Ka Halwa * <span>गाजर का हलवा</span></li>
+                <li>Chocolate Fountain <span>चॉकलेट फाउंटेन</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="menu-note reveal" data-i18n="menu.note">* Seasonal items. Final menu is finalised after tasting — call <a href="tel:09823170071">098231 70071</a> or ask for a custom spread when you book.</p>
     </div>
   </section>
 
@@ -860,6 +1053,7 @@
       <div class="footer__links">
         <a href="#about" data-i18n="nav.about">About</a>
         <a href="#spaces" data-i18n="nav.spaces">Spaces</a>
+        <a href="#menu" data-i18n="nav.menu">Menu</a>
         <a href="#events" data-i18n="nav.events">Events</a>
         <a href="#gallery" data-i18n="nav.gallery">Gallery</a>
         <a href="#reviews" data-i18n="nav.reviews">Reviews</a>

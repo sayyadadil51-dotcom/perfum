@@ -1570,6 +1570,91 @@ a { color: inherit; }
   .admin__search { min-width: 0; flex: 1; }
 }
 
+/* ---------- Catering menu ---------- */
+.menu-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+.menu-tab {
+  border: 1.5px solid var(--line);
+  background: var(--card);
+  color: var(--ink-soft);
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 11px 22px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.menu-tab:hover { border-color: var(--gold); color: var(--ink); transform: translateY(-2px); }
+.menu-tab.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--gold-light);
+}
+.menu-panel { display: none; }
+.menu-panel.active { display: block; animation: fadeIn 0.35s ease; }
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+.menu-course {
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  padding: 26px 24px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.menu-course:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow);
+}
+.menu-course h3 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--rose);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(185, 138, 47, 0.35);
+}
+.menu-course ul { list-style: none; }
+.menu-course li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px dashed var(--line);
+  font-size: 0.94rem;
+  font-weight: 500;
+}
+.menu-course li:last-child { border-bottom: none; }
+.menu-course li span {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  font-weight: 400;
+  white-space: nowrap;
+}
+.menu-note {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-top: 28px;
+  max-width: 640px;
+  margin-inline: auto;
+}
+.menu-note a { color: var(--rose); font-weight: 600; text-decoration: none; }
+.menu-note a:hover { text-decoration: underline; }
+@media (max-width: 860px) {
+  .menu-grid { grid-template-columns: 1fr; max-width: 480px; margin-inline: auto; }
+}
+
 /* ---------- Seasonal offer banner ---------- */
 .offer-banner {
   position: fixed;
