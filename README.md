@@ -5,7 +5,10 @@ A clean, modern single-page website for **Rani Kothi Lawns (रानी को�
 ## Features
 
 - 🎨 Modern editorial design — Fraunces + Inter, warm ivory/gold palette
-- 🌐 **EN / हिंदी language toggle** — full Hindi translation of nav, hero, sections, packages, FAQ & booking (preference saved)
+- 🌓 **Dark mode** — toggle in nav (◐/☾), respects system preference, no flash on load, saved
+- 🕌 **Wedding journey timeline** — Mehendi → Sangeet → Haldi → Pheras → Reception
+- 📲 **WhatsApp booking handoff** — success screen offers "Send on WhatsApp" pre-filled with the full booking summary
+- 🌐 **EN / हिंदी language toggle** — full Hindi translation of nav, hero, sections, packages, events, FAQ & booking (preference saved)
 - 📦 **Packages section** — Essential / Signature / Grand tiers with inclusions & quote CTAs (no invented prices)
 - ❓ **FAQ accordion** — 6 common venue questions, one-open-at-a-time
 - 💬 **WhatsApp button** — pre-filled message to 098231 70071

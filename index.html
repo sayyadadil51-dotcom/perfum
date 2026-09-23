@@ -45,6 +45,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <script>
+    // Apply saved theme before first paint to avoid flash
+    try {
+      var t = localStorage.getItem("raniKothiTheme");
+      if (!t) t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  </script>
 </head>
 <body>
 
@@ -59,10 +67,12 @@
         <a href="#about" data-i18n="nav.about">About</a>
         <a href="#spaces" data-i18n="nav.spaces">Spaces</a>
         <a href="#packages" data-i18n="nav.packages">Packages</a>
+        <a href="#events" data-i18n="nav.events">Events</a>
         <a href="#gallery" data-i18n="nav.gallery">Gallery</a>
         <a href="#reviews" data-i18n="nav.reviews">Reviews</a>
         <a href="#faq" data-i18n="nav.faq">FAQ</a>
         <a href="#visit" data-i18n="nav.visit">Visit</a>
+        <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">◐</button>
         <button type="button" class="lang-toggle" id="langToggle" aria-label="Switch language">हिं</button>
         <a href="#book" class="btn btn--primary btn--sm" data-i18n="nav.book">Book Now</a>
       </nav>
@@ -303,6 +313,49 @@
         </article>
       </div>
       <p class="packages__note reveal" data-i18n="pkg.note">Indicative planning tiers — final pricing depends on date, season, menu and guest count. Call <a href="tel:09823170071">098231 70071</a> for this week’s rates.</p>
+    </div>
+  </section>
+
+  <!-- ===== EVENTS TIMELINE ===== -->
+  <section class="section section--tint" id="events">
+    <div class="container">
+      <div class="section__head reveal">
+        <p class="eyebrow" data-i18n="events.eyebrow">Your Wedding Journey</p>
+        <h2 class="section__title"><span data-i18n="events.t1">Every ritual,</span> <em data-i18n="events.t2">one</em> <span data-i18n="events.t3">beautiful venue</span></h2>
+        <p class="section__sub" data-i18n="events.sub">From mehendi afternoons to the reception finale — host every function at Rani Kothi without changing addresses.</p>
+      </div>
+      <ol class="timeline reveal">
+        <li class="timeline__item">
+          <span class="timeline__dot">1</span>
+          <span class="timeline__emoji">🌿</span>
+          <h3 data-i18n="ev1.n">Mehendi</h3>
+          <p data-i18n="ev1.d">An afternoon of henna, music and laughter on the green lawn.</p>
+        </li>
+        <li class="timeline__item">
+          <span class="timeline__dot">2</span>
+          <span class="timeline__emoji">💃</span>
+          <h3 data-i18n="ev2.n">Sangeet</h3>
+          <p data-i18n="ev2.d">Dance night in the banquet hall with stage, lights and AV.</p>
+        </li>
+        <li class="timeline__item">
+          <span class="timeline__dot">3</span>
+          <span class="timeline__emoji">🌼</span>
+          <h3 data-i18n="ev3.n">Haldi</h3>
+          <p data-i18n="ev3.d">A bright morning ritual surrounded by marigolds in the garden.</p>
+        </li>
+        <li class="timeline__item">
+          <span class="timeline__dot">4</span>
+          <span class="timeline__emoji">👰</span>
+          <h3 data-i18n="ev4.n">Wedding Pheras</h3>
+          <p data-i18n="ev4.d">The main ceremony under the mandap, with your guests around you.</p>
+        </li>
+        <li class="timeline__item">
+          <span class="timeline__dot">5</span>
+          <span class="timeline__emoji">🎉</span>
+          <h3 data-i18n="ev5.n">Reception</h3>
+          <p data-i18n="ev5.d">A grand finale dinner — stage, décor and full catering service.</p>
+        </li>
+      </ol>
     </div>
   </section>
 
@@ -562,9 +615,12 @@
 
           <div class="form-success" id="formSuccess" hidden>
             <span class="form-success__icon">🎉</span>
-            <h3>Request received!</h3>
+            <h3 data-i18n="book.okTitle">Request received!</h3>
             <p id="successText">Thank you — our team will call you shortly to confirm your date.</p>
-            <button type="button" class="btn btn--outline" id="bookAnother">Book another date</button>
+            <div class="form-success__actions">
+              <a class="btn btn--wa-cta" id="waConfirm" href="#" target="_blank" rel="noopener" data-i18n="book.wa">Send on WhatsApp ↗</a>
+              <button type="button" class="btn btn--outline" id="bookAnother" data-i18n="book.another">Book another date</button>
+            </div>
           </div>
         </form>
       </div>
@@ -668,6 +724,7 @@
       <div class="footer__links">
         <a href="#about" data-i18n="nav.about">About</a>
         <a href="#spaces" data-i18n="nav.spaces">Spaces</a>
+        <a href="#events" data-i18n="nav.events">Events</a>
         <a href="#gallery" data-i18n="nav.gallery">Gallery</a>
         <a href="#reviews" data-i18n="nav.reviews">Reviews</a>
         <a href="#book" data-i18n="nav.bookShort">Book</a>

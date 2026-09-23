@@ -26,6 +26,25 @@
     })
   );
 
+  // ---------- Theme (light / dark) ----------
+  const themeToggle = document.getElementById("themeToggle");
+  const storedTheme =
+    localStorage.getItem("raniKothiTheme") ||
+    (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    themeToggle.textContent = theme === "dark" ? "☾" : "◐";
+    themeToggle.title = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
+    localStorage.setItem("raniKothiTheme", theme);
+  }
+  applyTheme(storedTheme);
+  themeToggle.addEventListener("click", () => {
+    const next =
+      document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    applyTheme(next);
+  });
+
   // ---------- Reveal on scroll ----------
   const revealEls = document.querySelectorAll(".reveal");
   const revealIO = new IntersectionObserver(
@@ -255,6 +274,20 @@
         ? `We already have a request for ${nice} — you've been added to the waitlist. Our team will call you at ${phone}.`
         : `Thank you, ${name.split(" ")[0]}! Your request for ${booking.space} on ${nice} is in. Our team will call you at ${phone} shortly.`;
 
+    // Pre-fill WhatsApp confirmation with the booking summary
+    const waMsg =
+      `Namaste Rani Kothi Lawns! 🌸%0A` +
+      `Booking request:%0A` +
+      `• Name: ${encodeURIComponent(name)}%0A` +
+      `• Phone: ${encodeURIComponent(phone)}%0A` +
+      `• Date: ${encodeURIComponent(nice)}%0A` +
+      `• Event: ${encodeURIComponent(booking.eventType)}%0A` +
+      `• Space: ${encodeURIComponent(booking.space)}%0A` +
+      `• Guests: ${encodeURIComponent(booking.guests)}` +
+      (booking.message ? `%0A• Notes: ${encodeURIComponent(booking.message)}` : "");
+    document.getElementById("waConfirm").href =
+      `https://wa.me/919823170071?text=${waMsg}`;
+
     successBox.hidden = false;
   });
 
@@ -273,12 +306,31 @@
       "nav.about": "About",
       "nav.spaces": "Spaces",
       "nav.packages": "Packages",
+      "nav.events": "Events",
       "nav.gallery": "Gallery",
       "nav.reviews": "Reviews",
       "nav.faq": "FAQ",
       "nav.visit": "Visit",
       "nav.book": "Book Now",
       "nav.bookShort": "Book",
+      "events.eyebrow": "Your Wedding Journey",
+      "events.t1": "Every ritual,",
+      "events.t2": "one",
+      "events.t3": "beautiful venue",
+      "events.sub": "From mehendi afternoons to the reception finale — host every function at Rani Kothi without changing addresses.",
+      "ev1.n": "Mehendi",
+      "ev1.d": "An afternoon of henna, music and laughter on the green lawn.",
+      "ev2.n": "Sangeet",
+      "ev2.d": "Dance night in the banquet hall with stage, lights and AV.",
+      "ev3.n": "Haldi",
+      "ev3.d": "A bright morning ritual surrounded by marigolds in the garden.",
+      "ev4.n": "Wedding Pheras",
+      "ev4.d": "The main ceremony under the mandap, with your guests around you.",
+      "ev5.n": "Reception",
+      "ev5.d": "A grand finale dinner — stage, décor and full catering service.",
+      "book.okTitle": "Request received!",
+      "book.wa": "Send on WhatsApp ↗",
+      "book.another": "Book another date",
       "hero.eyebrow": "Wedding Venue · Civil Lines, Nagpur",
       "hero.t1": "Where Your",
       "hero.t2": "Big Day",
@@ -349,12 +401,31 @@
       "nav.about": "परिचय",
       "nav.spaces": "जगहें",
       "nav.packages": "पैकेज",
+      "nav.events": "फंक्शन",
       "nav.gallery": "फ़ोटो",
       "nav.reviews": "रिव्यू",
       "nav.faq": "सवाल-जवाब",
       "nav.visit": "पता",
       "nav.book": "बुक करें",
       "nav.bookShort": "बुक",
+      "events.eyebrow": "आपकी शादी की यात्रा",
+      "events.t1": "हर रस्म,",
+      "events.t2": "एक",
+      "events.t3": "सुंदर जगह",
+      "events.sub": "मेहंदी की दोपहर से रिसेप्शन तक — हर फंक्शन रानी कोठी में, बिना जगह बदले।",
+      "ev1.n": "मेहंदी",
+      "ev1.d": "हरे लॉन पर मेहंदी, संगीत और ठहाकों की दोपहर।",
+      "ev2.n": "संगीत",
+      "ev2.d": "बैंक्वेट हॉल में स्टेज, लाइट और AV के साथ डांस नाइट।",
+      "ev3.n": "हल्दी",
+      "ev3.d": "बाग़ में गेंदों के बीच चमकती सुबह की रस्म।",
+      "ev4.n": "फेरे",
+      "ev4.d": "मंडप के नीचे मुख्य संस्कार, आपके मेहमानों के बीच।",
+      "ev5.n": "रिसेप्शन",
+      "ev5.d": "भव्य फ़ाइनल डिनर — स्टेज, डेकोर और पूरी कैटरिंग।",
+      "book.okTitle": "रिक्वेस्ट मिल गई!",
+      "book.wa": "WhatsApp पर भेजें ↗",
+      "book.another": "एक और तारीख़ बुक करें",
       "hero.eyebrow": "वेडिंग वेन्यू · सिविल लाइंस, नागपुर",
       "hero.t1": "आपके",
       "hero.t2": "ख़ास दिन",
