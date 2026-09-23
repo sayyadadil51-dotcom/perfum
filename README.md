@@ -23,7 +23,8 @@ A clean, modern single-page website for **Rani Kothi Lawns (रानी को�
 - 📊 Popular-times chart (Wednesday, "Live · Busier than usual")
 - 🖨️ **Printable booking slip** — print button on success screen + admin rows; print CSS shows only a formal slip (venue header, details table, ref no., signatures)
 - 📈 **Scroll progress bar** + floating **back-to-top** button
-- 🤖 **SEO files** — `robots.txt`, `sitemap.xml` (all section anchors), canonical + robots meta
+- 🍽️ **Catering menu section** — tabbed Pure Veg / Non-Veg / Sweets & Drinks with bilingual dish names, note on custom menus
+- 🔍 **SEO files** — `robots.txt`, `sitemap.xml` (all section anchors), canonical + robots meta, **FAQPage + Menu JSON-LD** structured data
 - 🖼️ Photo gallery with **category filters** (Garden / Hall / Ceremony / Decoration / Catering / Street View) + lightbox (keyboard nav) + AI-generated venue imagery
 - 🛠️ **Staff dashboard** (`#admin`, footer → Staff) — KPI stats, searchable table, click-to-cycle status (Pending→Confirmed→Declined), call/delete row actions, **CSV export**, clear all
 - 🗺️ Embedded Google Map with directions link
