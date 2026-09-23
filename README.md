@@ -8,7 +8,7 @@ A clean, modern single-page website for **Rani Kothi Lawns (रानी को�
 - 🌓 **Dark mode** — toggle in nav (◐/☾), respects system preference, no flash on load, saved
 - 🕌 **Wedding journey timeline** — Mehendi → Sangeet → Haldi → Pheras → Reception
 - 📲 **WhatsApp booking handoff** — success screen offers "Send on WhatsApp" pre-filled with the full booking summary
-- 🌐 **EN / हिंदी language toggle** — full Hindi translation of nav, hero, sections, packages, events, FAQ & booking (preference saved)
+- 🌐 **EN / हिंदी language toggle** — full Hindi translation of nav, hero, sections, packages, events, gallery filters, FAQ, booking & admin (preference saved)
 - 📦 **Packages section** — Essential / Signature / Grand tiers with inclusions & quote CTAs (no invented prices)
 - ❓ **FAQ accordion** — 6 common venue questions, one-open-at-a-time
 - 💬 **WhatsApp button** — pre-filled message to 098231 70071
@@ -18,7 +18,8 @@ A clean, modern single-page website for **Rani Kothi Lawns (रानी को�
 - 🔍 SEO — Open Graph meta, SVG favicon, JSON-LD `WeddingVenue` schema
 - ⭐ Real listing data — 4.3★ · 1,425 reviews, quotes from Google reviews, address, phone, hours, plus code
 - 📊 Popular-times chart (Wednesday, "Live · Busier than usual")
-- 🖼️ Photo gallery with lightbox (keyboard nav) + AI-generated venue imagery
+- 🖼️ Photo gallery with **category filters** (Garden / Hall / Ceremony / Decoration / Catering / Street View) + lightbox (keyboard nav) + AI-generated venue imagery
+- 🛠️ **Staff dashboard** (`#admin`, footer → Staff) — KPI stats, searchable table, click-to-cycle status (Pending→Confirmed→Declined), call/delete row actions, **CSV export**, clear all
 - 🗺️ Embedded Google Map with directions link
 - ✨ Scroll-reveal animations, animated counters, marquee strip, floating call/WhatsApp/Book CTAs
 
