@@ -37,6 +37,18 @@ python3 -m http.server 8080
 # open http://localhost:8080
 ```
 
+## Deploy (GitHub Pages)
+
+One-time manual setup (repo owner):
+
+1. Open the repo on GitHub → **Settings → Pages**
+2. Under **Build and deployment → Source**, choose **GitHub Actions**
+3. Save — the `Deploy to GitHub Pages` workflow runs on every push
+
+Site URL: `https://sayyadadil51-dotcom.github.io/perfum/`
+
+> Never commit tokens or secrets to this repository. Deployment uses the built-in `GITHUB_TOKEN` only.
+
 ## Structure
 
 ```
