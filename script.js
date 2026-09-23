@@ -266,4 +266,53 @@
   });
 
   renderBookings();
+
+  // ---------- Gallery lightbox ----------
+  const lightbox = document.getElementById("lightbox");
+  const lbImg = document.getElementById("lbImg");
+  const lbCap = document.getElementById("lbCap");
+  const galleryItems = [...document.querySelectorAll(".gallery__item")];
+  let lbIndex = 0;
+
+  function openLightbox(i) {
+    lbIndex = (i + galleryItems.length) % galleryItems.length;
+    const item = galleryItems[lbIndex];
+    const img = item.querySelector("img");
+    lbImg.src = img.src;
+    lbImg.alt = img.alt;
+    lbCap.textContent = item.querySelector("figcaption")?.textContent || "";
+    lightbox.hidden = false;
+    document.body.style.overflow = "hidden";
+  }
+  function closeLightbox() {
+    lightbox.hidden = true;
+    document.body.style.overflow = "";
+  }
+
+  galleryItems.forEach((item, i) => {
+    item.addEventListener("click", () => openLightbox(i));
+    item.setAttribute("tabindex", "0");
+    item.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") openLightbox(i);
+    });
+  });
+
+  document.getElementById("lbClose").addEventListener("click", closeLightbox);
+  document.getElementById("lbPrev").addEventListener("click", (e) => {
+    e.stopPropagation();
+    openLightbox(lbIndex - 1);
+  });
+  document.getElementById("lbNext").addEventListener("click", (e) => {
+    e.stopPropagation();
+    openLightbox(lbIndex + 1);
+  });
+  lightbox.addEventListener("click", (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (lightbox.hidden) return;
+    if (e.key === "Escape") closeLightbox();
+    if (e.key === "ArrowLeft") openLightbox(lbIndex - 1);
+    if (e.key === "ArrowRight") openLightbox(lbIndex + 1);
+  });
 })();
