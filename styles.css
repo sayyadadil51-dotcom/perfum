@@ -1570,6 +1570,137 @@ a { color: inherit; }
   .admin__search { min-width: 0; flex: 1; }
 }
 
+/* ---------- Seasonal offer banner ---------- */
+.offer-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 10px 48px 10px 20px;
+  background: linear-gradient(90deg, var(--rose), var(--gold));
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+}
+.offer-banner[hidden] { display: none; }
+.offer-banner p { margin: 0; line-height: 1.5; }
+.offer-banner__tag {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.offer-banner a {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  margin-left: 8px;
+  white-space: nowrap;
+}
+.offer-banner__close {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.18);
+  border: none;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.2s;
+}
+.offer-banner__close:hover { background: rgba(255, 255, 255, 0.35); }
+body.has-offer .nav { top: 42px; }
+body.has-offer .scroll-progress { top: 42px; }
+@media (max-width: 640px) {
+  .offer-banner { font-size: 0.78rem; padding: 9px 44px 9px 12px; }
+  body.has-offer .nav { top: 56px; }
+  body.has-offer .scroll-progress { top: 56px; }
+}
+
+/* ---------- Testimonials carousel ---------- */
+.tst-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin: 30px 0 24px;
+}
+.tst-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.25s;
+  display: grid;
+  place-items: center;
+}
+.tst-btn:hover {
+  background: var(--ink);
+  color: var(--gold-light);
+  border-color: var(--ink);
+  transform: scale(1.06);
+}
+.tst-dots { display: flex; gap: 8px; }
+.tst-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: none;
+  background: var(--line);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.25s;
+}
+.tst-dot.active {
+  background: var(--gold);
+  transform: scale(1.35);
+}
+.tst-viewport {
+  overflow: hidden;
+  margin-inline: -6px;
+}
+.tst-track {
+  display: flex;
+  gap: 22px;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.tst-card {
+  flex: 0 0 calc((100% - 44px) / 3);
+  min-width: 0;
+  margin: 0;
+}
+@media (max-width: 960px) {
+  .tst-card { flex-basis: calc((100% - 22px) / 2); }
+}
+@media (max-width: 640px) {
+  .tst-card { flex-basis: 100%; }
+}
+
 /* ---------- Scroll progress + back to top ---------- */
 .scroll-progress {
   position: fixed;

@@ -59,6 +59,16 @@
 </head>
 <body>
 
+  <!-- ===== SEASONAL OFFER BANNER ===== -->
+  <div class="offer-banner" id="offerBanner" role="region" aria-label="Special offer">
+    <p>
+      <span class="offer-banner__tag" data-i18n="offer.tag">Monsoon Special</span>
+      <span data-i18n="offer.text">15% off lawn bookings for Aug–Oct functions — limited dates left!</span>
+      <a href="tel:09823170071" data-i18n="offer.cta">Call 098231 70071</a>
+    </p>
+    <button type="button" class="offer-banner__close" id="offerClose" aria-label="Dismiss offer">✕</button>
+  </div>
+
   <!-- ===== NAV ===== -->
   <header class="nav" id="nav">
     <div class="container nav__inner">
@@ -460,44 +470,87 @@
             <span>marriage functions <b>10</b></span>
           </div>
         </div>
+        <p class="section__sub" data-i18n="reviews.sub">Real words from weddings and functions hosted at Rani Kothi — from our Google listing.</p>
       </div>
 
-      <div class="reviews-grid">
-        <blockquote class="review-card reveal">
+      <div class="tst-controls reveal">
+        <button type="button" class="tst-btn" id="tstPrev" aria-label="Previous review">‹</button>
+        <div class="tst-dots" id="tstDots"></div>
+        <button type="button" class="tst-btn" id="tstNext" aria-label="Next review">›</button>
+      </div>
+
+      <div class="tst-viewport reveal" id="tstViewport">
+        <div class="tst-track" id="tstTrack">
+          <blockquote class="review-card tst-card">
+            <div class="stars">★★★★★</div>
+            <p>“Amazing <mark>place</mark> to host events, <mark>rooms</mark> are nice, <mark>service</mark> is excellent.”</p>
+            <footer>— Google Review</footer>
+          </blockquote>
+          <blockquote class="review-card tst-card">
+            <div class="stars">★★★★★</div>
+            <p>“Great <mark>location</mark>, <mark>food</mark>, <mark>staff</mark>, lawn, ambience — slightly expensive!!!”</p>
+            <footer>— Google Review</footer>
+          </blockquote>
+          <blockquote class="review-card tst-card">
+            <div class="stars">★★★★★</div>
+            <p>“Very well maintained <mark>facilities</mark> and courteous staff.”</p>
+            <footer>— Google Review</footer>
+          </blockquote>
+          <blockquote class="review-card tst-card">
+            <div class="stars">★★★★★</div>
+            <p>“Amazing and spacious hall as well as lawn. Clean and hygienic environment. Catering service is awesome and the food is really worth tasting. Ample of parking space.”</p>
+            <footer>
+              <strong>Saily Kamle</strong> · Local Guide · 278 reviews
+            </footer>
+          </blockquote>
+          <blockquote class="review-card tst-card">
+            <div class="stars">★★★★★</div>
+            <p>“Attending a wedding function — so good arrangement and decoration. Good service.”</p>
+            <footer>
+              <strong>Vikas Parashar</strong> · Local Guide · 114 reviews
+            </footer>
+          </blockquote>
+          <blockquote class="review-card tst-card">
+            <div class="stars">★★★★★</div>
+            <p>“बहुत ही अच्छा है रानी कोठी — it is best for small programs.” 👆👌👍</p>
+            <footer>
+              <strong>Nalini Uikey</strong> · 2 reviews
+            </footer>
+          </blockquote>
+        </div>
+      </div>
+
+      <!-- Hidden semantic grid for SEO / no-JS fallback -->
+      <div class="reviews-grid" hidden>
+        <blockquote class="review-card">
           <div class="stars">★★★★★</div>
-          <p>“Amazing <mark>place</mark> to host events, <mark>rooms</mark> are nice, <mark>service</mark> is excellent.”</p>
+          <p>“Amazing place to host events, rooms are nice, service is excellent.”</p>
           <footer>— Google Review</footer>
         </blockquote>
-        <blockquote class="review-card reveal">
+        <blockquote class="review-card">
           <div class="stars">★★★★★</div>
-          <p>“Great <mark>location</mark>, <mark>food</mark>, <mark>staff</mark>, lawn, ambience — slightly expensive!!!”</p>
+          <p>“Great location, food, staff, lawn, ambience.”</p>
           <footer>— Google Review</footer>
         </blockquote>
-        <blockquote class="review-card reveal">
+        <blockquote class="review-card">
           <div class="stars">★★★★★</div>
-          <p>“Very well maintained <mark>facilities</mark> and courteous staff.”</p>
+          <p>“Very well maintained facilities and courteous staff.”</p>
           <footer>— Google Review</footer>
         </blockquote>
-        <blockquote class="review-card reveal">
+        <blockquote class="review-card">
           <div class="stars">★★★★★</div>
-          <p>“Amazing and spacious hall as well as lawn. Clean and hygienic environment. Catering service is awesome and the food is really worth tasting. Ample of parking space.”</p>
-          <footer>
-            <strong>Saily Kamle</strong> · Local Guide · 278 reviews
-          </footer>
+          <p>“Amazing and spacious hall as well as lawn. Catering service is awesome.”</p>
+          <footer><strong>Saily Kamle</strong> · Local Guide</footer>
         </blockquote>
-        <blockquote class="review-card reveal">
+        <blockquote class="review-card">
           <div class="stars">★★★★★</div>
-          <p>“Attending a wedding function — so good arrangement and decoration. Good service.”</p>
-          <footer>
-            <strong>Vikas Parashar</strong> · Local Guide · 114 reviews
-          </footer>
+          <p>“So good arrangement and decoration. Good service.”</p>
+          <footer><strong>Vikas Parashar</strong> · Local Guide</footer>
         </blockquote>
-        <blockquote class="review-card reveal">
+        <blockquote class="review-card">
           <div class="stars">★★★★★</div>
-          <p>“बहुत ही अच्छा है रानी कोठी — it is best for small programs.” 👆👌👍</p>
-          <footer>
-            <strong>Nalini Uikey</strong> · 2 reviews
-          </footer>
+          <p>“बहुत ही अच्छा है रानी कोठी — best for small programs.”</p>
+          <footer><strong>Nalini Uikey</strong></footer>
         </blockquote>
       </div>
     </div>

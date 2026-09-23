@@ -405,6 +405,10 @@
       "reviews.t1": "What Nagpur",
       "reviews.t2": "says",
       "reviews.t3": "about us",
+      "reviews.sub": "Real words from weddings and functions hosted at Rani Kothi — from our Google listing.",
+      "offer.tag": "Monsoon Special",
+      "offer.text": "15% off lawn bookings for Aug–Oct functions — limited dates left!",
+      "offer.cta": "Call 098231 70071",
       "faq.eyebrow": "Good to Know",
       "faq1.q": "How many guests can Rani Kothi Lawns accommodate?",
       "faq1.a": "The garden lawn comfortably hosts up to 800 guests, and the banquet hall up to 400. Booking both spaces together works beautifully for multi-function weddings.",
@@ -529,6 +533,10 @@
       "reviews.t1": "नागपुर",
       "reviews.t2": "क्या",
       "reviews.t3": "कहता है",
+      "reviews.sub": "रानी कोठी में हुए शादी-रिसेप्शन के असली शब्द — हमारी Google लिस्टिंग से।",
+      "offer.tag": "मॉनसून स्पेशल",
+      "offer.text": "अगस्त–अक्टूबर की फंक्शन बुकिंग पर लॉन पर 15% छूट — कुछ ही तारीख़ें बाकी!",
+      "offer.cta": "कॉल करें 098231 70071",
       "faq.eyebrow": "जान लीजिए",
       "faq1.q": "रानी कोठी लॉन्स में कितने मेहमान आ सकते हैं?",
       "faq1.a": "गार्डन लॉन में आराम से 800 मेहमान और बैंक्वेट हॉल में 400 तक। दोनों जगह एक साथ बुक करने पर बहु-फंक्शन शादी के लिए बढ़िया रहता है।",
@@ -679,6 +687,120 @@
   window.addEventListener("scroll", onScrollFx, { passive: true });
   onScrollFx();
   backTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+  // ---------- Seasonal offer banner ----------
+  const offerBanner = document.getElementById("offerBanner");
+  const offerDismissed = localStorage.getItem("raniKothiOfferDismissed") === "1";
+  if (offerDismissed) {
+    offerBanner.hidden = true;
+  } else {
+    document.body.classList.add("has-offer");
+  }
+  document.getElementById("offerClose").addEventListener("click", () => {
+    offerBanner.hidden = true;
+    document.body.classList.remove("has-offer");
+    localStorage.setItem("raniKothiOfferDismissed", "1");
+  });
+
+  // ---------- Testimonials carousel ----------
+  const tstTrack = document.getElementById("tstTrack");
+  const tstCards = [...tstTrack.children];
+  const tstDotsWrap = document.getElementById("tstDots");
+  let tstIndex = 0;
+  let tstTimer = null;
+
+  function perView() {
+    if (window.innerWidth <= 640) return 1;
+    if (window.innerWidth <= 960) return 2;
+    return 3;
+  }
+  function maxIndex() {
+    return Math.max(0, tstCards.length - perView());
+  }
+
+  function buildDots() {
+    tstDotsWrap.innerHTML = "";
+    for (let i = 0; i <= maxIndex(); i++) {
+      const d = document.createElement("button");
+      d.type = "button";
+      d.className = "tst-dot" + (i === tstIndex ? " active" : "");
+      d.setAttribute("aria-label", `Go to review ${i + 1}`);
+      d.addEventListener("click", () => {
+        tstIndex = i;
+        renderTst();
+        restartAuto();
+      });
+      tstDotsWrap.appendChild(d);
+    }
+  }
+
+  function renderTst() {
+    tstIndex = Math.min(Math.max(tstIndex, 0), maxIndex());
+    const card = tstCards[0];
+    const gap = 22;
+    const step = card.getBoundingClientRect().width + gap;
+    tstTrack.style.transform = `translateX(${-tstIndex * step}px)`;
+    [...tstDotsWrap.children].forEach((d, i) =>
+      d.classList.toggle("active", i === tstIndex)
+    );
+  }
+
+  function restartAuto() {
+    clearInterval(tstTimer);
+    tstTimer = setInterval(() => {
+      tstIndex = tstIndex >= maxIndex() ? 0 : tstIndex + 1;
+      renderTst();
+    }, 4500);
+  }
+
+  document.getElementById("tstPrev").addEventListener("click", () => {
+    tstIndex = tstIndex <= 0 ? maxIndex() : tstIndex - 1;
+    renderTst();
+    restartAuto();
+  });
+  document.getElementById("tstNext").addEventListener("click", () => {
+    tstIndex = tstIndex >= maxIndex() ? 0 : tstIndex + 1;
+    renderTst();
+    restartAuto();
+  });
+
+  const tstViewport = document.getElementById("tstViewport");
+  tstViewport.addEventListener("mouseenter", () => clearInterval(tstTimer));
+  tstViewport.addEventListener("mouseleave", restartAuto);
+
+  // touch swipe
+  let touchX = null;
+  tstViewport.addEventListener(
+    "touchstart",
+    (e) => {
+      touchX = e.touches[0].clientX;
+    },
+    { passive: true }
+  );
+  tstViewport.addEventListener(
+    "touchend",
+    (e) => {
+      if (touchX == null) return;
+      const dx = e.changedTouches[0].clientX - touchX;
+      if (Math.abs(dx) > 40) {
+        if (dx < 0) tstIndex = Math.min(tstIndex + 1, maxIndex());
+        else tstIndex = Math.max(tstIndex - 1, 0);
+        renderTst();
+        restartAuto();
+      }
+      touchX = null;
+    },
+    { passive: true }
+  );
+
+  window.addEventListener("resize", () => {
+    buildDots();
+    renderTst();
+  });
+
+  buildDots();
+  renderTst();
+  restartAuto();
 
   // ---------- Print slip ----------
   let lastBooking = null;
