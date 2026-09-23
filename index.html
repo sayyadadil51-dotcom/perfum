@@ -400,28 +400,37 @@
         <p class="eyebrow">Photos &amp; Videos</p>
         <h2 class="section__title">A look around <em>Rani Kothi</em></h2>
       </div>
-      <div class="gallery reveal">
-        <figure class="gallery__item gallery__item--lg">
+      <div class="gallery-filters reveal" id="galleryFilters" role="tablist" aria-label="Filter photos">
+        <button class="gf-btn active" data-filter="all" data-i18n="gal.all">All</button>
+        <button class="gf-btn" data-filter="garden" data-i18n="gal.garden">Garden</button>
+        <button class="gf-btn" data-filter="hall" data-i18n="gal.hall">Banquet Hall</button>
+        <button class="gf-btn" data-filter="ceremony" data-i18n="gal.ceremony">Ceremony</button>
+        <button class="gf-btn" data-filter="decoration" data-i18n="gal.decoration">Decoration</button>
+        <button class="gf-btn" data-filter="catering" data-i18n="gal.catering">Catering</button>
+        <button class="gf-btn" data-filter="exterior" data-i18n="gal.exterior">Street View</button>
+      </div>
+      <div class="gallery reveal" id="galleryGrid">
+        <figure class="gallery__item gallery__item--lg" data-cat="garden">
           <img src="images/hero-lawn.jpg" alt="Lawn at dusk" />
           <figcaption>Garden · Evening</figcaption>
         </figure>
-        <figure class="gallery__item">
+        <figure class="gallery__item" data-cat="hall">
           <img src="images/banquet-hall.jpg" alt="Banquet hall" />
           <figcaption>Banquet Hall</figcaption>
         </figure>
-        <figure class="gallery__item">
+        <figure class="gallery__item" data-cat="ceremony">
           <img src="images/garden-ceremony.jpg" alt="Ceremony aisle" />
           <figcaption>Ceremony</figcaption>
         </figure>
-        <figure class="gallery__item">
+        <figure class="gallery__item" data-cat="decoration">
           <img src="images/decoration.jpg" alt="Stage decoration" />
           <figcaption>Decoration</figcaption>
         </figure>
-        <figure class="gallery__item">
+        <figure class="gallery__item" data-cat="catering">
           <img src="images/catering-food.jpg" alt="Catering spread" />
           <figcaption>Catering</figcaption>
         </figure>
-        <figure class="gallery__item gallery__item--lg">
+        <figure class="gallery__item gallery__item--lg" data-cat="exterior">
           <img src="images/venue-exterior.jpg" alt="Venue exterior" />
           <figcaption>Street View · Exterior</figcaption>
         </figure>
@@ -711,6 +720,53 @@
     <button class="lightbox__nav lightbox__nav--next" id="lbNext" aria-label="Next">›</button>
   </div>
 
+  <!-- ===== STAFF / ADMIN ===== -->
+  <section class="section section--admin" id="admin">
+    <div class="container">
+      <div class="admin reveal">
+        <div class="admin__head">
+          <div>
+            <p class="eyebrow eyebrow--light" data-i18n="admin.eyebrow">Staff Only</p>
+            <h2 class="section__title section__title--light"><span data-i18n="admin.t1">Bookings</span> <em data-i18n="admin.t2">dashboard</em></h2>
+          </div>
+          <div class="admin__actions">
+            <input type="search" id="adminSearch" class="admin__search" placeholder="Search name, phone, date…" data-i18n-ph="admin.search" />
+            <button type="button" class="btn btn--sm btn--admin" id="exportCsv" data-i18n="admin.export">Export CSV</button>
+            <button type="button" class="btn btn--sm btn--admin-danger" id="clearAll" data-i18n="admin.clear">Clear all</button>
+          </div>
+        </div>
+
+        <div class="admin__stats" id="adminStats">
+          <div class="admin-stat"><span id="statTotal">0</span><small data-i18n="admin.total">Total</small></div>
+          <div class="admin-stat"><span id="statPending">0</span><small data-i18n="admin.pending">Pending</small></div>
+          <div class="admin-stat"><span id="statConfirmed">0</span><small data-i18n="admin.confirmed">Confirmed</small></div>
+          <div class="admin-stat"><span id="statWaitlist">0</span><small data-i18n="admin.waitlist">Waitlist</small></div>
+        </div>
+
+        <div class="admin__table-wrap">
+          <table class="admin__table" id="adminTable">
+            <thead>
+              <tr>
+                <th data-i18n="admin.thDate">Date</th>
+                <th data-i18n="admin.thGuest">Guest</th>
+                <th data-i18n="admin.thPhone">Phone</th>
+                <th data-i18n="admin.thEvent">Event</th>
+                <th data-i18n="admin.thSpace">Space</th>
+                <th data-i18n="admin.thGuests">Pax</th>
+                <th data-i18n="admin.thStatus">Status</th>
+                <th data-i18n="admin.thActions">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminBody">
+              <tr class="admin__empty"><td colspan="8" data-i18n="admin.empty">No booking requests yet — submit the form above to see them here.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="admin__note" data-i18n="admin.note">Stored locally in this browser (demo mode). Status: click Pending → Confirmed → Declined → Pending.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== FOOTER ===== -->
   <footer class="footer">
     <div class="container footer__inner">
@@ -728,6 +784,7 @@
         <a href="#gallery" data-i18n="nav.gallery">Gallery</a>
         <a href="#reviews" data-i18n="nav.reviews">Reviews</a>
         <a href="#book" data-i18n="nav.bookShort">Book</a>
+        <a href="#admin" title="Staff dashboard" data-i18n="nav.staff">Staff</a>
         <a href="tel:09823170071">098231 70071</a>
       </div>
       <p class="footer__copy">© <span id="year"></span> Rani Kothi Lawns, Civil Lines, Nagpur. All rights reserved.</p>

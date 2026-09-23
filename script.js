@@ -331,6 +331,34 @@
       "book.okTitle": "Request received!",
       "book.wa": "Send on WhatsApp ↗",
       "book.another": "Book another date",
+      "nav.staff": "Staff",
+      "gal.all": "All",
+      "gal.garden": "Garden",
+      "gal.hall": "Banquet Hall",
+      "gal.ceremony": "Ceremony",
+      "gal.decoration": "Decoration",
+      "gal.catering": "Catering",
+      "gal.exterior": "Street View",
+      "admin.eyebrow": "Staff Only",
+      "admin.t1": "Bookings",
+      "admin.t2": "dashboard",
+      "admin.search": "Search name, phone, date…",
+      "admin.export": "Export CSV",
+      "admin.clear": "Clear all",
+      "admin.total": "Total",
+      "admin.pending": "Pending",
+      "admin.confirmed": "Confirmed",
+      "admin.waitlist": "Waitlist",
+      "admin.thDate": "Date",
+      "admin.thGuest": "Guest",
+      "admin.thPhone": "Phone",
+      "admin.thEvent": "Event",
+      "admin.thSpace": "Space",
+      "admin.thGuests": "Pax",
+      "admin.thStatus": "Status",
+      "admin.thActions": "Actions",
+      "admin.empty": "No booking requests yet — submit the form above to see them here.",
+      "admin.note": "Stored locally in this browser (demo mode). Status: click Pending → Confirmed → Declined → Pending.",
       "hero.eyebrow": "Wedding Venue · Civil Lines, Nagpur",
       "hero.t1": "Where Your",
       "hero.t2": "Big Day",
@@ -426,6 +454,34 @@
       "book.okTitle": "रिक्वेस्ट मिल गई!",
       "book.wa": "WhatsApp पर भेजें ↗",
       "book.another": "एक और तारीख़ बुक करें",
+      "nav.staff": "स्टाफ़",
+      "gal.all": "सभी",
+      "gal.garden": "गार्डन",
+      "gal.hall": "बैंक्वेट हॉल",
+      "gal.ceremony": "सेरेमनी",
+      "gal.decoration": "सजावट",
+      "gal.catering": "कैटरिंग",
+      "gal.exterior": "स्ट्रीट व्यू",
+      "admin.eyebrow": "सिर्फ़ स्टाफ़",
+      "admin.t1": "बुकिंग",
+      "admin.t2": "डैशबोर्ड",
+      "admin.search": "नाम, फ़ोन, तारीख़ खोजें…",
+      "admin.export": "CSV एक्सपोर्ट",
+      "admin.clear": "सभी हटाएँ",
+      "admin.total": "कुल",
+      "admin.pending": "पेंडिंग",
+      "admin.confirmed": "कन्फ़र्म",
+      "admin.waitlist": "वेटलिस्ट",
+      "admin.thDate": "तारीख़",
+      "admin.thGuest": "मेहमान",
+      "admin.thPhone": "फ़ोन",
+      "admin.thEvent": "फंक्शन",
+      "admin.thSpace": "जगह",
+      "admin.thGuests": "लोग",
+      "admin.thStatus": "स्थिति",
+      "admin.thActions": "एक्शन",
+      "admin.empty": "अभी कोई बुकिंग रिक्वेस्ट नहीं — ऊपर फ़ॉर्म भरने पर यहाँ दिखेगी।",
+      "admin.note": "डेमो मोड: यह डेटा इसी ब्राउज़र में सेव है। स्थिति बदलने के लिए पिल पर क्लिक करें।",
       "hero.eyebrow": "वेडिंग वेन्यू · सिविल लाइंस, नागपुर",
       "hero.t1": "आपके",
       "hero.t2": "ख़ास दिन",
@@ -504,6 +560,11 @@
       if (!dict[key]) return;
       el.innerHTML = dict[key];
     });
+    document.querySelectorAll("[data-i18n-ph]").forEach((el) => {
+      const key = el.dataset.i18nPh;
+      if (!dict[key]) return;
+      el.placeholder = dict[key];
+    });
     document.documentElement.lang = lang === "hi" ? "hi" : "en";
     langToggle.textContent = lang === "hi" ? "EN" : "हिं";
     langToggle.classList.toggle("active", lang === "hi");
@@ -525,16 +586,37 @@
     });
   });
 
+  // ---------- Gallery filters ----------
+  const gfBtns = [...document.querySelectorAll(".gf-btn")];
+  const allGalleryItems = [...document.querySelectorAll(".gallery__item")];
+
+  function visibleGalleryItems() {
+    return allGalleryItems.filter((el) => !el.classList.contains("filtered-out"));
+  }
+
+  gfBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      gfBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      const f = btn.dataset.filter;
+      allGalleryItems.forEach((el) => {
+        const show = f === "all" || el.dataset.cat === f;
+        el.classList.toggle("filtered-out", !show);
+      });
+    });
+  });
+
   // ---------- Gallery lightbox ----------
   const lightbox = document.getElementById("lightbox");
   const lbImg = document.getElementById("lbImg");
   const lbCap = document.getElementById("lbCap");
-  const galleryItems = [...document.querySelectorAll(".gallery__item")];
   let lbIndex = 0;
 
   function openLightbox(i) {
-    lbIndex = (i + galleryItems.length) % galleryItems.length;
-    const item = galleryItems[lbIndex];
+    const items = visibleGalleryItems();
+    if (!items.length) return;
+    lbIndex = (i + items.length) % items.length;
+    const item = items[lbIndex];
     const img = item.querySelector("img");
     lbImg.src = img.src;
     lbImg.alt = img.alt;
@@ -547,11 +629,17 @@
     document.body.style.overflow = "";
   }
 
-  galleryItems.forEach((item, i) => {
-    item.addEventListener("click", () => openLightbox(i));
+  allGalleryItems.forEach((item) => {
+    item.addEventListener("click", () => {
+      const items = visibleGalleryItems();
+      openLightbox(items.indexOf(item));
+    });
     item.setAttribute("tabindex", "0");
     item.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") openLightbox(i);
+      if (e.key === "Enter") {
+        const items = visibleGalleryItems();
+        openLightbox(items.indexOf(item));
+      }
     });
   });
 
@@ -573,4 +661,123 @@
     if (e.key === "ArrowLeft") openLightbox(lbIndex - 1);
     if (e.key === "ArrowRight") openLightbox(lbIndex + 1);
   });
+
+  // ---------- Admin dashboard ----------
+  const STATUS_CYCLE = ["Pending", "Confirmed", "Declined"];
+  const adminBody = document.getElementById("adminBody");
+  const adminSearch = document.getElementById("adminSearch");
+
+  function statusClass(s) {
+    return (
+      "status-pill status-pill--" +
+      (s === "Pending" ? "pending" : s === "Confirmed" ? "confirmed" : s === "Waitlist" ? "waitlist" : "declined")
+    );
+  }
+
+  function renderAdmin() {
+    const q = (adminSearch.value || "").toLowerCase().trim();
+    const bookings = getBookings();
+    const filtered = bookings.filter((b) => {
+      if (!q) return true;
+      const hay = `${b.name} ${b.phone} ${b.date} ${b.eventType} ${b.space} ${b.status}`.toLowerCase();
+      return hay.includes(q);
+    });
+
+    // stats
+    document.getElementById("statTotal").textContent = bookings.length;
+    document.getElementById("statPending").textContent = bookings.filter((b) => b.status === "Pending").length;
+    document.getElementById("statConfirmed").textContent = bookings.filter((b) => b.status === "Confirmed").length;
+    document.getElementById("statWaitlist").textContent = bookings.filter((b) => b.status === "Waitlist").length;
+
+    adminBody.innerHTML = "";
+    if (!filtered.length) {
+      adminBody.innerHTML = `<tr class="admin__empty"><td colspan="8">${bookings.length ? "No bookings match your search." : "No booking requests yet — submit the form above to see them here."}</td></tr>`;
+      return;
+    }
+
+    filtered
+      .slice()
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .forEach((b) => {
+        const tr = document.createElement("tr");
+        const d = new Date(b.date + "T00:00:00");
+        const dateStr = d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+        tr.innerHTML = `
+          <td>${escapeHtml(dateStr)}</td>
+          <td>${escapeHtml(b.name)}</td>
+          <td><a href="tel:${escapeHtml(b.phone)}" style="color:var(--gold-light)">${escapeHtml(b.phone)}</a></td>
+          <td>${escapeHtml(b.eventType)}</td>
+          <td>${escapeHtml(b.space)}</td>
+          <td>${escapeHtml(String(b.guests))}</td>
+          <td><button type="button" class="${statusClass(b.status)}" title="Click to change status">${escapeHtml(b.status)}</button></td>
+          <td>
+            <div class="admin-row-actions">
+              <a class="admin-icon-btn" href="tel:${escapeHtml(b.phone)}" title="Call">📞</a>
+              <button type="button" class="admin-icon-btn admin-icon-btn--danger" data-del="${b.id}" title="Delete">✕</button>
+            </div>
+          </td>
+        `;
+        // cycle status: Pending → Confirmed → Declined → Pending (Waitlist → Pending)
+        tr.querySelector(".status-pill").addEventListener("click", () => {
+          const list = getBookings();
+          const target = list.find((x) => x.id === b.id);
+          if (!target) return;
+          if (target.status === "Waitlist") target.status = "Pending";
+          else {
+            const idx = STATUS_CYCLE.indexOf(target.status);
+            target.status = STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
+          }
+          saveBookings(list);
+          renderAdmin();
+          renderBookings();
+        });
+        tr.querySelector("[data-del]").addEventListener("click", () => {
+          saveBookings(getBookings().filter((x) => x.id !== b.id));
+          renderAdmin();
+          renderBookings();
+        });
+        adminBody.appendChild(tr);
+      });
+  }
+
+  adminSearch.addEventListener("input", renderAdmin);
+
+  document.getElementById("exportCsv").addEventListener("click", () => {
+    const bookings = getBookings();
+    if (!bookings.length) {
+      alert("No bookings to export.");
+      return;
+    }
+    const header = ["Date", "Name", "Phone", "Event", "Space", "Guests", "Status", "Message", "Created"];
+    const rows = bookings.map((b) =>
+      [b.date, b.name, b.phone, b.eventType, b.space, b.guests, b.status, b.message || "", b.createdAt]
+        .map((v) => `"${String(v).replace(/"/g, '""')}"`)
+        .join(",")
+    );
+    const csv = [header.join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `rani-kothi-bookings-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById("clearAll").addEventListener("click", () => {
+    if (!getBookings().length) return;
+    if (confirm("Delete ALL booking requests? This cannot be undone.")) {
+      saveBookings([]);
+      renderAdmin();
+      renderBookings();
+    }
+  });
+
+  // re-render admin whenever bookings change from the public form
+  const _origRender = renderBookings;
+  renderBookings = function () {
+    _origRender();
+    if (document.getElementById("adminBody")) renderAdmin();
+  };
+  renderBookings();
 })();
