@@ -351,35 +351,6 @@
     </div>
   </aside>
 
-  <!-- Product modal -->
-  <div class="modal" id="productModal" hidden aria-hidden="true">
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="pmName">
-      <button type="button" class="icon-btn modal-x" id="modalClose" aria-label="Close">
-        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-      <div class="modal-img"><img id="pmImg" alt="" /></div>
-      <div class="modal-info">
-        <p class="kicker" id="pmBadge"></p>
-        <h2 id="pmName"></h2>
-        <p class="pm-sub" id="pmSub"></p>
-        <p class="pm-price" id="pmPrice"></p>
-        <p class="pm-desc" id="pmDesc"></p>
-        <p class="pm-size-label">Select UK size</p>
-        <div class="sizes" id="pmSizes"></div>
-        <div class="qty-row">
-          <label for="pmQty">Qty</label>
-          <div class="qty">
-            <button type="button" id="qtyMinus" aria-label="Decrease">−</button>
-            <input id="pmQty" type="number" min="1" max="6" value="1" />
-            <button type="button" id="qtyPlus" aria-label="Increase">+</button>
-          </div>
-        </div>
-        <button class="btn btn-dark btn-block" id="addBtn">Add to bag</button>
-        <p class="fine" id="pmMeta"></p>
-      </div>
-    </div>
-  </div>
-
   <div class="toast" id="toast" hidden></div>
 
   <script src="js/script.js"></script>

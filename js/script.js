@@ -140,8 +140,6 @@ const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
 let filter = "all";
 let query = "";
-let activeProduct = null;
-let activeSize = null;
 let cart = loadCart();
 
 const searchBar = $("#searchBar");
@@ -172,14 +170,16 @@ function badgeClass(b) {
 }
 
 function productCard(p, featured = false) {
-  const el = document.createElement("button");
-  el.type = "button";
+  const el = document.createElement("article");
   el.className = featured ? "f-card" : "p-card";
   el.dataset.id = p.id;
   const price = p.compare
     ? `${inr(p.price)}<span class="was">${inr(p.compare)}</span>`
     : inr(p.price);
   const badge = p.badge ? `<span class="badge ${badgeClass(p.badge)}">${p.badge}</span>` : "";
+  const sizes = p.sizes
+    .map((s) => `<button type="button" class="size" data-size="${s}">${s}</button>`)
+    .join("");
   if (featured) {
     el.innerHTML = `
       <img src="${p.img}" alt="${p.name}" />
@@ -188,19 +188,34 @@ function productCard(p, featured = false) {
         <h3>${p.name}</h3>
         <p class="sub">${p.subtitle}</p>
         <p class="price">${price}</p>
+        <p class="pm-size-label">UK size</p>
+        <div class="sizes">${sizes}</div>
+        <button type="button" class="add-mini">Add to bag</button>
       </div>`;
   } else {
     el.innerHTML = `
       <div class="p-img">
         <img src="${p.img}" alt="${p.name}" />
         ${badge}
-        <span class="quick">Quick view</span>
       </div>
       <h3>${p.name}</h3>
       <p class="sub">${p.subtitle}</p>
-      <p class="price">${price}</p>`;
+      <p class="price">${price}</p>
+      <p class="pm-size-label">UK size</p>
+      <div class="sizes">${sizes}</div>
+      <button type="button" class="add-mini">Add to bag</button>`;
   }
-  el.addEventListener("click", () => openProduct(p.id));
+  el.querySelectorAll(".size").forEach((b) => {
+    b.addEventListener("click", () => {
+      el.querySelectorAll(".size").forEach((x) => x.classList.remove("is-on"));
+      b.classList.add("is-on");
+      el.dataset.size = b.dataset.size;
+    });
+  });
+  el.querySelector(".add-mini").addEventListener("click", () => {
+    const size = el.dataset.size != null ? Number(el.dataset.size) : null;
+    addItem(p, size);
+  });
   return el;
 }
 
@@ -234,51 +249,30 @@ function renderFeatured() {
   PRODUCTS.filter((p) => p.featured).forEach((p) => row.appendChild(productCard(p, true)));
 }
 
-function openProduct(id) {
-  const p = PRODUCTS.find((x) => x.id === id);
-  if (!p) return;
-  activeProduct = p;
-  activeSize = null;
-  $("#pmImg").src = p.img;
-  $("#pmImg").alt = p.name;
-  $("#pmName").textContent = p.name;
-  $("#pmSub").textContent = p.subtitle;
-  $("#pmDesc").textContent = p.desc;
-  $("#pmBadge").textContent = p.badge || p.cats[0];
-  $("#pmPrice").innerHTML = p.compare
-    ? `${inr(p.price)} <span class="was">${inr(p.compare)}</span>`
-    : inr(p.price);
-  $("#pmMeta").textContent = `${p.rating} ★ · ${p.reviews} reviews · UK sizing`;
-  $("#pmQty").value = 1;
-  const sizes = $("#pmSizes");
-  sizes.innerHTML = "";
-  p.sizes.forEach((s) => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "size";
-    b.textContent = s;
-    b.addEventListener("click", () => {
-      activeSize = s;
-      $$(".size", sizes).forEach((x) => x.classList.remove("is-on"));
-      b.classList.add("is-on");
-    });
-    sizes.appendChild(b);
-  });
-  const modal = $("#productModal");
-  modal.classList.add("is-open");
-  modal.hidden = false;
-  modal.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
-}
-
-function closeProduct() {
-  const modal = $("#productModal");
-  modal.classList.remove("is-open");
-  modal.hidden = true;
-  modal.setAttribute("aria-hidden", "true");
-  if ($("#cartDrawer").getAttribute("aria-hidden") === "true") {
-    document.body.style.overflow = "";
+function addItem(product, size, qty = 1) {
+  if (size == null || Number.isNaN(size)) {
+    toast("Choose a UK size first.");
+    return;
   }
+  qty = Math.max(1, Math.min(6, qty));
+  const key = product.id + "-" + size;
+  const existing = cart.find((i) => i.key === key);
+  if (existing) existing.qty = Math.min(6, existing.qty + qty);
+  else {
+    cart.push({
+      key,
+      id: product.id,
+      name: product.name,
+      img: product.img,
+      price: product.price,
+      size,
+      qty,
+    });
+  }
+  saveCart();
+  renderCart();
+  openCart();
+  toast(`${product.name} · UK ${size} added.`);
 }
 
 function cartCount() {
@@ -339,34 +333,6 @@ function renderCart() {
       : "Free shipping unlocked.";
 }
 
-function addToCart() {
-  if (!activeProduct) return;
-  if (activeSize == null) {
-    toast("Choose a UK size first.");
-    return;
-  }
-  const qty = Math.max(1, Math.min(6, parseInt($("#pmQty").value, 10) || 1));
-  const key = activeProduct.id + "-" + activeSize;
-  const existing = cart.find((i) => i.key === key);
-  if (existing) existing.qty = Math.min(6, existing.qty + qty);
-  else {
-    cart.push({
-      key,
-      id: activeProduct.id,
-      name: activeProduct.name,
-      img: activeProduct.img,
-      price: activeProduct.price,
-      size: activeSize,
-      qty,
-    });
-  }
-  saveCart();
-  renderCart();
-  closeProduct();
-  openCart();
-  toast(`${activeProduct.name} · UK ${activeSize} added.`);
-}
-
 function openCart() {
   closeMobileMenu();
   searchBar.hidden = true;
@@ -379,7 +345,7 @@ function closeCart() {
   $("#overlay").hidden = true;
   $("#cartDrawer").classList.remove("is-open");
   $("#cartDrawer").setAttribute("aria-hidden", "true");
-  if ($("#productModal").hidden) document.body.style.overflow = "";
+  document.body.style.overflow = "";
 }
 
 function toast(msg) {
@@ -404,8 +370,6 @@ function openCheckout() {
 }
 
 /* ── wire up ── */
-$("#productModal").classList.remove("is-open");
-$("#productModal").hidden = true;
 renderFeatured();
 renderShop();
 renderCart();
@@ -478,23 +442,6 @@ $("#cartClose").addEventListener("click", (e) => {
   closeCart();
 });
 $("#overlay").addEventListener("click", closeCart);
-$("#modalClose").addEventListener("click", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-  closeProduct();
-});
-$("#productModal").addEventListener("click", (e) => {
-  if (e.target === $("#productModal") || e.target.closest("#modalClose")) closeProduct();
-});
-$("#addBtn").addEventListener("click", addToCart);
-$("#qtyMinus").addEventListener("click", () => {
-  const n = Math.max(1, (parseInt($("#pmQty").value, 10) || 1) - 1);
-  $("#pmQty").value = n;
-});
-$("#qtyPlus").addEventListener("click", () => {
-  const n = Math.min(6, (parseInt($("#pmQty").value, 10) || 1) + 1);
-  $("#pmQty").value = n;
-});
 
 $("#cartBody").addEventListener("click", (e) => {
   const rm = e.target.closest("[data-rm]");
@@ -524,8 +471,7 @@ $("#newsForm").addEventListener("submit", (e) => {
 
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
-  if (!$("#productModal").hidden) closeProduct();
-  else if ($("#cartDrawer").classList.contains("is-open")) closeCart();
+  if ($("#cartDrawer").classList.contains("is-open")) closeCart();
   else if (!searchBar.hidden) searchBar.hidden = true;
   else closeMobileMenu();
 });
