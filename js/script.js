@@ -270,7 +270,7 @@ function openProduct(id) {
 
 function closeProduct() {
   $("#productModal").hidden = true;
-  if ($("#cartDrawer").getAttribute("aria-hidden") === "true" && $("#checkModal").hidden) {
+  if ($("#cartDrawer").getAttribute("aria-hidden") === "true") {
     document.body.style.overflow = "";
   }
 }
@@ -373,7 +373,7 @@ function closeCart() {
   $("#overlay").hidden = true;
   $("#cartDrawer").classList.remove("is-open");
   $("#cartDrawer").setAttribute("aria-hidden", "true");
-  if ($("#productModal").hidden && $("#checkModal").hidden) document.body.style.overflow = "";
+  if ($("#productModal").hidden) document.body.style.overflow = "";
 }
 
 function toast(msg) {
@@ -388,15 +388,13 @@ function toast(msg) {
 
 function openCheckout() {
   if (!cart.length) return;
-  closeCart();
-  $("#checkFormWrap").hidden = false;
-  $("#checkDone").hidden = true;
-  $("#checkModal").hidden = false;
-  document.body.style.overflow = "hidden";
-}
-function closeCheckout() {
-  $("#checkModal").hidden = true;
-  document.body.style.overflow = "";
+  const lines = cart.map(
+    (i) => `• ${i.qty}× ${i.name} (UK ${i.size}) — ${inr(i.price * i.qty)}`
+  );
+  const sub = cartSubtotal();
+  const ship = sub >= FREE_SHIP ? 0 : SHIP_FEE;
+  const text = `Hi Adersh, I would like to order:\n${lines.join("\n")}\n\nTotal: ${inr(sub + ship)}`;
+  window.open(`https://wa.me/919876543210?text=${encodeURIComponent(text)}`, "_blank", "noopener");
 }
 
 /* ── wire up ── */
@@ -509,26 +507,6 @@ $("#cartBody").addEventListener("click", (e) => {
 });
 
 $("#checkoutBtn").addEventListener("click", openCheckout);
-$("#checkClose").addEventListener("click", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-  closeCheckout();
-});
-$("#checkModal").addEventListener("click", (e) => {
-  if (e.target === $("#checkModal") || e.target.closest("#checkClose")) closeCheckout();
-});
-$("#checkForm").addEventListener("submit", (e) => {
-  e.preventDefault();
-  const ref = "AF-" + Math.floor(100000 + Math.random() * 900000);
-  $("#orderRef").textContent = `Order ${ref} · ${inr(cartSubtotal() + (cartSubtotal() >= FREE_SHIP ? 0 : SHIP_FEE))} · ${cartCount()} pair${cartCount() === 1 ? "" : "s"}`;
-  cart = [];
-  saveCart();
-  renderCart();
-  $("#checkFormWrap").hidden = true;
-  $("#checkDone").hidden = false;
-  e.target.reset();
-});
-$("#doneClose").addEventListener("click", closeCheckout);
 
 $("#newsForm").addEventListener("submit", (e) => {
   e.preventDefault();
@@ -538,8 +516,7 @@ $("#newsForm").addEventListener("submit", (e) => {
 
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
-  if (!$("#checkModal").hidden) closeCheckout();
-  else if (!$("#productModal").hidden) closeProduct();
+  if (!$("#productModal").hidden) closeProduct();
   else if ($("#cartDrawer").classList.contains("is-open")) closeCart();
   else if (!searchBar.hidden) searchBar.hidden = true;
   else closeMobileMenu();

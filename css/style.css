@@ -740,27 +740,6 @@ em { font-style: italic; font-weight: 400; color: var(--cognac); }
 }
 .qty input::-webkit-outer-spin-button,
 .qty input::-webkit-inner-spin-button { appearance: none; }
-.check-card {
-  display: block;
-  grid-template-columns: none;
-  max-width: 520px;
-  padding: 2.2rem 2rem;
-  position: relative;
-}
-.check-card h2 { font-size: 2.2rem; margin-bottom: 1rem; padding-right: 2.6rem; }
-#checkForm { display: grid; gap: 0.7rem; }
-#checkForm label { display: grid; gap: 0.3rem; font-size: 0.8rem; color: var(--muted); }
-#checkForm input, #checkForm textarea {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 0.7rem 0.85rem;
-  background: var(--cream);
-  outline: none;
-  font-size: 1rem;
-}
-#checkForm input:focus, #checkForm textarea:focus { border-color: var(--ink); }
-.check-pay { font-size: 0.82rem; color: var(--ink-2); }
-
 /* ── Toast ── */
 .toast {
   position: fixed; bottom: 1.4rem; left: 50%;
