@@ -1,452 +1,454 @@
-/* ═══════════════════════════════════════════════════════════════
-   ARJUNA CELEBRATIONS HALL — interactions
-   ═══════════════════════════════════════════════════════════════ */
-(function () {
+/* Y. M. Devnikar — bilingual discovery, local visit lists, and safe sharing. */
+(() => {
   "use strict";
 
-  const $ = (s, c) => (c || document).querySelector(s);
-  const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
-  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+  const icon = (name) => `<svg class="icon" aria-hidden="true"><use href="#i-${name}" /></svg>`;
+  const escapeHTML = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+  const storageKey = "ym-devnikar-visit-list-v1";
+  const i18n = window.DevnikarI18n;
+  if (!i18n) return;
+  let locale = i18n.initialLocale();
+  const t = (key, values = {}) => i18n.t(key, locale, values);
+  const number = (value, minimumDigits = 1) => i18n.formatNumber(value, locale, minimumDigits);
+  const localLook = (look) => i18n.localizeLook(look, locale);
+  const countText = (key, count, minimumDigits = 1) => t(`${key}.${count === 1 ? "one" : "other"}`, { count: number(count, minimumDigits) });
 
-  /* ── Footer year ─────────────────────────────────────────── */
-  $("#year").textContent = new Date().getFullYear();
+  // These are illustrative looks, not a claim about live inventory or pricing.
+  const looks = [
+    {
+      id: "sage-saree", name: "The Sage Saree", category: "SAREE EDIT", colour: "SAGE",
+      image: "images/saree-edit.webp",
+      alt: "A sage green saree with a delicate gold border, editorial style inspiration",
+      filters: ["women", "occasion"], tags: ["Saree inspiration", "Wedding guest", "Timeless elegance"],
+      keywords: "saree sari silk sage green gold women wedding festive festival traditional drape elegant",
+      description: "A softer take on celebration dressing. Muted sage, a golden border, and an easy, graceful drape make a lovely starting point for your next special-occasion look."
+    },
+    {
+      id: "ivory-kurta", name: "The Celebration Kurta", category: "MEN’S EDIT", colour: "SAND",
+      image: "images/menswear-edit.webp",
+      alt: "A sand-coloured embroidered kurta and ivory trousers, editorial style inspiration",
+      filters: ["men", "occasion"], tags: ["Kurta inspiration", "Festive dressing", "Understated detail"],
+      keywords: "kurta men menswear ivory cream beige sand embroidery wedding festive festival traditional ethnic",
+      description: "Quiet detail. Effortless presence. A neutral kurta-inspired look brings together classic traditional dressing and a modern, relaxed sensibility—for a festival, a family occasion, or a wedding."
+    },
+    {
+      id: "wine-lehenga", name: "The Festive Favourite", category: "CELEBRATION EDIT", colour: "WINE",
+      image: "images/festive-edit.webp",
+      alt: "A wine-coloured embroidered lehenga, editorial celebration style inspiration",
+      filters: ["women", "occasion"], tags: ["Lehenga inspiration", "Wedding moments", "Rich colour"],
+      keywords: "lehenga women festive festival occasion celebration wedding maroon wine burgundy traditional ethnic gold",
+      description: "Some moments call for a little more. Rich wine tones and golden accents are the inspiration behind this celebration look. Bring it along to the store and explore your own festive favourite."
+    },
+    {
+      id: "olive-shirt", name: "The Everyday Essential", category: "EVERYDAY EDIT", colour: "OLIVE",
+      image: "images/everyday-edit.webp",
+      alt: "A relaxed olive shirt and ecru trousers, editorial everyday style inspiration",
+      filters: ["men"], tags: ["Shirt inspiration", "Everyday style", "Easy neutrals"],
+      keywords: "shirt men menswear olive green casual everyday daily relaxed modern contemporary cotton",
+      description: "For the days with no dress code. An earthy olive palette and an easy silhouette make a fresh everyday mood. Discover casual styles in store and find the one that feels like you."
+    }
+  ];
+  const byId = new Map(looks.map((look) => [look.id, look]));
+  let filter = "all";
+  let searchTerm = "";
+  let currentLook = null;
+  let toastTimer;
+  let copyTimer;
+  let actionStatusKey = null;
+  let memoryOnly = false;
+  const dialogs = $$("dialog");
+  const menuButton = $("#menuButton");
+  const navLinks = $("#navLinks");
 
-  /* ── Navbar: scroll state + mobile menu + active link ────── */
-  const navbar = $("#navbar");
-  const onScroll = () => navbar.classList.toggle("scrolled", window.scrollY > 10);
+  // URL input is allowlisted to existing look IDs. A shared link never saves items silently.
+  const sharedValue = (new URLSearchParams(location.search).get("edit") || "").slice(0, 300);
+  let sharedIds = [...new Set(sharedValue.split(".").filter((id) => byId.has(id)))];
+
+  function readSaved() {
+    try {
+      const value = JSON.parse(localStorage.getItem(storageKey) || "[]");
+      return new Set(Array.isArray(value) ? value.filter((id) => byId.has(id)) : []);
+    } catch { return new Set(); }
+  }
+  let saved = readSaved();
+
+  function persistSaved() {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify([...saved]));
+      memoryOnly = false;
+    } catch { memoryOnly = true; }
+  }
+
+  function matchesQuery(look, query) {
+    const mr = i18n.localizeLook(look, "mr");
+    const haystack = `${look.name} ${look.category} ${look.colour} ${look.keywords} ${mr.name} ${mr.category} ${mr.colour} ${mr.keywords}`.normalize("NFC").toLocaleLowerCase();
+    return query.normalize("NFC").toLocaleLowerCase().split(/\s+/).filter(Boolean).every((part) => haystack.includes(part));
+  }
+
+  function renderProduct(source) {
+    const look = localLook(source);
+    const isSaved = saved.has(look.id);
+    return `<article class="product-card">
+      <div class="product-image"><button class="look-open" data-look="${look.id}" aria-label="${escapeHTML(t("look.explore", { name: look.name }))}">
+        <img src="${look.image}" alt="${escapeHTML(look.alt)}" width="1000" height="1300" loading="lazy" />
+        <span class="quick-look">${escapeHTML(t("look.quick"))} ${icon("arrow")}</span></button>
+        <button class="save-button${isSaved ? " saved" : ""}" data-save="${look.id}" aria-label="${escapeHTML(t(isSaved ? "look.remove" : "look.save", { name: look.name }))}" aria-pressed="${isSaved}">${icon("heart")}</button>
+      </div><div class="product-meta"><p>${escapeHTML(look.category)} <span>·</span> ${escapeHTML(look.colour)}</p><button class="product-title" data-look="${look.id}">${escapeHTML(look.name)} ${icon("diagonal")}</button><span class="in-store-label">${escapeHTML(t("look.store"))}</span></div>
+    </article>`;
+  }
+
+  function renderSharedBanner() {
+    $("#sharedEditBanner").hidden = !sharedIds.length;
+    $("#sharedEditTitle").textContent = t("shared.title");
+    $("#sharedEditDescription").textContent = countText("shared.description", sharedIds.length);
+    const alreadySaved = sharedIds.length > 0 && sharedIds.every((id) => saved.has(id));
+    $("#saveSharedEdit").textContent = t(alreadySaved ? "shared.saved" : "shared.save");
+    $("#saveSharedEdit").disabled = alreadySaved;
+  }
+
+  function clearSharedEdit() {
+    if (!sharedIds.length) return;
+    sharedIds = [];
+    const url = new URL(location.href);
+    url.searchParams.delete("edit");
+    history.replaceState(null, "", url);
+    renderSharedBanner();
+  }
+
+  function renderGrid() {
+    const result = looks.filter((look) => (!sharedIds.length || sharedIds.includes(look.id)) && (filter === "all" || look.filters.includes(filter)) && matchesQuery(look, searchTerm));
+    $("#productGrid").innerHTML = result.length ? result.map(renderProduct).join("")
+      : `<div class="empty-grid">${icon("search")}<h3>${escapeHTML(t("empty.title"))}</h3><p>${escapeHTML(t("empty.description"))}</p><button data-reset-styles>${escapeHTML(t("empty.browse"))}</button></div>`;
+    $("#styleCount").textContent = countText("looks", result.length, 2);
+    $("#activeSearch").hidden = !searchTerm;
+    $("#activeSearchText").textContent = searchTerm ? t("search.matching", { query: searchTerm }) : "";
+    $$("[data-filter]").forEach((button) => {
+      const active = button.dataset.filter === filter;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+    renderSharedBanner();
+  }
+
+  function setFilter(value, resetQuery = false) {
+    filter = ["all", "women", "men", "occasion"].includes(value) ? value : "all";
+    if (resetQuery) searchTerm = "";
+    renderGrid();
+  }
+
+  function renderSavedState() {
+    $("#bagCount").textContent = number(saved.size);
+    $("#bagCount").hidden = !saved.size;
+    $("#shortlistButton").setAttribute("aria-label", countText("bag", saved.size));
+    $$("[data-save]").forEach((button) => {
+      const source = byId.get(button.dataset.save);
+      if (!source) return;
+      const isSaved = saved.has(source.id);
+      button.classList.toggle("saved", isSaved);
+      button.setAttribute("aria-pressed", String(isSaved));
+      button.setAttribute("aria-label", t(isSaved ? "look.remove" : "look.save", { name: localLook(source).name }));
+    });
+    if (currentLook) {
+      const isSaved = saved.has(currentLook.id);
+      $("#quickSave").classList.toggle("saved", isSaved);
+      $("#quickSave").setAttribute("aria-pressed", String(isSaved));
+      $("#quickSave span").textContent = t(isSaved ? "quick.saved" : "quick.save");
+    }
+    renderSharedBanner();
+  }
+
+  function setActionStatus(key) {
+    actionStatusKey = key;
+    $("#listActionStatus").hidden = !key;
+    $("#listActionStatus").textContent = key ? t(key) : "";
+  }
+
+  function resetActionButtons() {
+    clearTimeout(copyTimer);
+    $("#copyList").innerHTML = `${icon("copy")}<span>${escapeHTML(t("copy.label"))}</span>`;
+    $("#shareList span").textContent = t("share.label");
+  }
+
+  function toggleSaved(id) {
+    if (!byId.has(id)) return;
+    const wasSaved = saved.has(id);
+    if (wasSaved) saved.delete(id); else saved.add(id);
+    persistSaved();
+    setActionStatus(null);
+    resetActionButtons();
+    renderSavedState();
+    const shortlist = $("#shortlistDialog");
+    if (shortlist.open) {
+      const restoreFocus = shortlist.contains(document.activeElement);
+      renderShortlist();
+      if (restoreFocus) ($("#shortlistItems [data-save]") || $(".close-dialog", shortlist)).focus();
+    }
+    const messageKey = wasSaved ? "toast.removed" : memoryOnly ? "toast.session" : "toast.added";
+    if ($("#quickDialog").open && currentLook?.id === id) {
+      $("#quickFeedback").hidden = false;
+      $("#quickFeedback").textContent = t(messageKey);
+    }
+    showToast(t(messageKey), !wasSaved);
+  }
+
+  function renderShortlist() {
+    const items = [...saved].map((id) => localLook(byId.get(id)));
+    $("#shortlistItems").innerHTML = items.length ? items.map((look) => `<div class="shortlist-item">
+      <img src="${look.image}" alt="${escapeHTML(look.alt)}" width="74" height="96" />
+      <div class="shortlist-item-text"><button data-look="${look.id}">${escapeHTML(look.name)}</button><p>${escapeHTML(look.category)} · ${escapeHTML(look.colour)}</p><small>${escapeHTML(t("look.inspiration"))}</small></div>
+      <button class="icon-button" data-save="${look.id}" aria-label="${escapeHTML(t("look.remove", { name: look.name }))}" aria-pressed="true">${icon("close")}</button>
+    </div>`).join("") : `<div class="shortlist-empty">${icon("bag")}<h3>${escapeHTML(t("saved.emptyTitle"))}</h3><p>${escapeHTML(t("saved.emptyDescription"))}</p><button class="text-link" data-browse-styles>${escapeHTML(t("saved.browse"))} ${icon("arrow")}</button></div>`;
+    $("#shortlistFooter").hidden = !items.length;
+    $("#shortlistCount").textContent = countText("saved", items.length);
+    $("#shortlistFooter > small").textContent = t(memoryOnly ? "saved.sessionNote" : "saved.note");
+  }
+
+  function closeDialog(dialog) {
+    if (dialog?.open) dialog.close();
+    if (!dialogs.some((item) => item.open)) document.body.classList.remove("modal-open");
+  }
+  function openDialog(dialog) {
+    closeMenu();
+    dialogs.forEach((item) => { if (item.open && item !== dialog) item.close(); });
+    if (!dialog.open) dialog.showModal();
+    document.body.classList.add("modal-open");
+    $("#toast").classList.remove("visible");
+  }
+  dialogs.forEach((dialog) => {
+    dialog.addEventListener("keydown", (event) => {
+      // Search inputs otherwise consume Escape to clear their value before the dialog closes.
+      if (event.key === "Escape") { event.preventDefault(); closeDialog(dialog); return; }
+      if (event.key !== "Tab") return;
+      const controls = $$("a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex='-1'])", dialog).filter((element) => element.getClientRects().length > 0);
+      if (!controls.length) { event.preventDefault(); return; }
+      const first = controls[0], last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    });
+    dialog.addEventListener("close", () => {
+      if (!dialogs.some((item) => item.open)) document.body.classList.remove("modal-open");
+    });
+    dialog.addEventListener("click", (event) => {
+      if (event.target !== dialog) return;
+      const box = dialog.getBoundingClientRect();
+      if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) closeDialog(dialog);
+    });
+  });
+
+  function renderQuickLook() {
+    if (!currentLook) return;
+    const look = localLook(currentLook);
+    $("#quickImage").src = look.image;
+    $("#quickImage").alt = look.alt;
+    $("#quickCategory").textContent = look.category;
+    $("#quickTitle").textContent = look.name;
+    $("#quickDescription").textContent = look.description;
+    $("#quickTags").innerHTML = look.tags.map((tag) => `<span>${escapeHTML(tag)}</span>`).join("");
+  }
+  function openLook(id) {
+    currentLook = byId.get(id);
+    if (!currentLook) return;
+    renderQuickLook();
+    $("#quickFeedback").hidden = true;
+    renderSavedState();
+    openDialog($("#quickDialog"));
+    $("#quickDialog").scrollTop = 0;
+  }
+  $("#quickSave").addEventListener("click", () => { if (currentLook) toggleSaved(currentLook.id); });
+  $("#quickVisit").addEventListener("click", () => closeDialog($("#quickDialog")));
+  function openShortlist() { renderShortlist(); openDialog($("#shortlistDialog")); }
+  $("#shortlistButton").addEventListener("click", openShortlist);
+  $("#footerShortlist").addEventListener("click", openShortlist);
+  $("#toastList").addEventListener("click", openShortlist);
+  $("#shortlistVisit").addEventListener("click", () => closeDialog($("#shortlistDialog")));
+
+  function renderSearch() {
+    const query = $("#searchInput").value.trim();
+    const results = looks.filter((look) => matchesQuery(look, query));
+    $("#searchResultHeading").textContent = query ? countText("found", results.length) : t("search.explore");
+    $("#searchResults").innerHTML = results.length ? results.map((source) => {
+      const look = localLook(source);
+      return `<button class="search-result" data-look="${look.id}"><img src="${look.image}" alt="" width="54" height="68" /><span><strong>${escapeHTML(look.name)}</strong><small>${escapeHTML(look.category)} · ${escapeHTML(look.colour)}</small></span>${icon("diagonal")}</button>`;
+    }).join("") : `<p class="search-empty">${escapeHTML(t("search.empty"))}<br />${escapeHTML(t("search.store"))}</p>`;
+  }
+  $("#searchButton").addEventListener("click", () => {
+    $("#searchInput").value = "";
+    renderSearch();
+    openDialog($("#searchDialog"));
+    $("#searchInput").focus();
+  });
+  $("#searchInput").addEventListener("input", renderSearch);
+  $("#searchForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    searchTerm = $("#searchInput").value.trim();
+    clearSharedEdit();
+    setFilter("all");
+    closeDialog($("#searchDialog"));
+    location.hash = "styles";
+    $("#styles").scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  });
+  $("#clearSearch").addEventListener("click", () => { searchTerm = ""; renderGrid(); });
+
+  function applyLocale(value, persist = true) {
+    locale = value === "mr" ? "mr" : "en";
+    i18n.applyStatic(locale);
+    renderGrid();
+    renderQuickLook();
+    renderSavedState();
+    renderShortlist();
+    renderSearch();
+    resetActionButtons();
+    setActionStatus(actionStatusKey);
+    menuButton.setAttribute("aria-label", t(navLinks.classList.contains("open") ? "menu.close" : "menu.open"));
+    $("#year").textContent = number(new Date().getFullYear());
+    if (persist) {
+      i18n.persistLocale(locale);
+      const url = new URL(location.href);
+      if (locale === "mr" || sharedIds.length) url.searchParams.set("lang", locale); else url.searchParams.delete("lang");
+      history.replaceState(null, "", url);
+    }
+  }
+
+  document.addEventListener("click", (event) => {
+    const language = event.target.closest("[data-locale]");
+    if (language) { applyLocale(language.dataset.locale); return; }
+    const close = event.target.closest("[data-close]");
+    if (close) closeDialog(document.getElementById(close.dataset.close));
+    const save = event.target.closest("[data-save]");
+    if (save) { toggleSaved(save.dataset.save); return; }
+    const look = event.target.closest("[data-look]");
+    if (look) { openLook(look.dataset.look); return; }
+    const tab = event.target.closest("[data-filter]");
+    if (tab) setFilter(tab.dataset.filter);
+    const link = event.target.closest("[data-filter-link]");
+    if (link) { clearSharedEdit(); setFilter(link.dataset.filterLink, true); }
+    const browse = event.target.closest("[data-browse-styles]");
+    if (browse) {
+      closeDialog($("#shortlistDialog"));
+      clearSharedEdit();
+      setFilter("all", true);
+      location.hash = "styles";
+    }
+    if (event.target.closest("[data-reset-styles]")) { clearSharedEdit(); setFilter("all", true); }
+  });
+  $("#closeSharedEdit").addEventListener("click", () => { clearSharedEdit(); setFilter("all", true); $("[data-filter=all]").focus(); });
+  $("#saveSharedEdit").addEventListener("click", () => {
+    sharedIds.forEach((id) => saved.add(id));
+    persistSaved();
+    renderSavedState();
+    showToast(t(memoryOnly ? "toast.session" : "shared.added"), true);
+    $("#closeSharedEdit").focus();
+  });
+
+  function showToast(message, listAction = false) {
+    clearTimeout(toastTimer);
+    if (dialogs.some((dialog) => dialog.open)) return;
+    $("#toastMessage").textContent = message;
+    $("#toastList").hidden = !listAction;
+    $("#toast").classList.add("visible");
+    toastTimer = setTimeout(() => $("#toast").classList.remove("visible"), 4300);
+  }
+
+  function shareUrl() {
+    // Only look IDs and a language choice go into a shared URL, never stored visitor data.
+    const url = new URL(location.pathname, location.origin);
+    url.searchParams.set("edit", [...saved].join("."));
+    url.searchParams.set("lang", locale);
+    url.hash = "styles";
+    return url.href;
+  }
+  function visitListText(includeShareLink = false) {
+    const list = [...saved].map((id, index) => {
+      const look = localLook(byId.get(id));
+      return `${number(index + 1)}. ${look.name} (${look.colour.toLocaleLowerCase()})`;
+    }).join("\n");
+    const link = includeShareLink ? `\n\n${t("list.link")}\n${shareUrl()}` : "";
+    return `${t("list.title")}\n\n${list}\n\n${t("list.note")}\n\n${t("list.address")}\nhttps://www.google.com/maps/search/?api=1&query=Y.M.DEVNIKAR%20Hanuman%20Road%20Udgir${link}`;
+  }
+  function downloadText(text) {
+    const url = URL.createObjectURL(new Blob([text], { type: "text/plain;charset=utf-8" }));
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "devnikar-visit-list.txt";
+    document.body.append(anchor);
+    anchor.click();
+    anchor.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  async function copyOrDownload(text) {
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
+      await navigator.clipboard.writeText(text);
+      return "copied";
+    } catch { downloadText(text); return "downloaded"; }
+  }
+  $("#copyList").addEventListener("click", async () => {
+    if (!saved.size) return;
+    const result = await copyOrDownload(visitListText());
+    const key = result === "copied" ? "copy.success" : "copy.downloaded";
+    $("#copyList").innerHTML = `${icon("check")}<span>${escapeHTML(t(key))}</span>`;
+    setActionStatus(key);
+    clearTimeout(copyTimer);
+    copyTimer = setTimeout(() => { $("#copyList").innerHTML = `${icon("copy")}<span>${escapeHTML(t("copy.label"))}</span>`; }, 3500);
+  });
+  $("#shareList").addEventListener("click", async () => {
+    if (!saved.size) return;
+    const button = $("#shareList");
+    button.disabled = true;
+    button.setAttribute("aria-busy", "true");
+    setActionStatus("share.pending");
+    try {
+      if (typeof navigator.share === "function") {
+        try {
+          await navigator.share({ title: t("share.title"), text: visitListText(), url: shareUrl() });
+          setActionStatus("share.success");
+          return;
+        } catch (error) {
+          if (error?.name === "AbortError") { setActionStatus(null); return; }
+          // A denied/unsupported native share falls back to copying, then a text download.
+        }
+      }
+      const result = await copyOrDownload(visitListText(true));
+      setActionStatus(result === "copied" ? "share.copied" : "share.downloaded");
+    } finally {
+      button.disabled = false;
+      button.removeAttribute("aria-busy");
+    }
+  });
+
+  function closeMenu() {
+    navLinks.classList.remove("open");
+    menuButton.setAttribute("aria-expanded", "false");
+    menuButton.setAttribute("aria-label", t("menu.open"));
+    $("use", menuButton).setAttribute("href", "#i-menu");
+  }
+  menuButton.addEventListener("click", () => {
+    const open = navLinks.classList.toggle("open");
+    menuButton.setAttribute("aria-expanded", String(open));
+    menuButton.setAttribute("aria-label", t(open ? "menu.close" : "menu.open"));
+    $("use", menuButton).setAttribute("href", open ? "#i-close" : "#i-menu");
+  });
+  $$("a", navLinks).forEach((link) => link.addEventListener("click", closeMenu));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && navLinks.classList.contains("open")) { closeMenu(); menuButton.focus(); }
+  });
+  document.addEventListener("click", (event) => { if (!event.target.closest("#header")) closeMenu(); });
+  window.matchMedia("(min-width: 1101px)").addEventListener("change", (event) => { if (event.matches) closeMenu(); });
+  const onScroll = () => $("#header").classList.toggle("scrolled", window.scrollY > 20);
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
-  const navToggle = $("#navToggle");
-  const navLinks = $("#navLinks");
-  navToggle.addEventListener("click", () => {
-    const open = navLinks.classList.toggle("open");
-    navToggle.setAttribute("aria-expanded", String(open));
-    navToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-  });
-  $$("a", navLinks).forEach((a) =>
-    a.addEventListener("click", () => {
-      navLinks.classList.remove("open");
-      navToggle.setAttribute("aria-expanded", "false");
-    })
-  );
-
-  const sectionIds = ["overview", "gallery", "packages", "reviews", "visit", "faq"];
-  const linkMap = new Map();
-  $$("a", navLinks).forEach((a) => {
-    const id = a.getAttribute("href").slice(1);
-    if (sectionIds.includes(id)) linkMap.set(id, a);
-  });
-  const activeIO = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) {
-          linkMap.forEach((a) => a.classList.remove("active"));
-          const link = linkMap.get(e.target.id);
-          if (link) link.classList.add("active");
-        }
-      });
-    },
-    { rootMargin: "-35% 0px -55% 0px" }
-  );
-  sectionIds.forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) activeIO.observe(el);
-  });
-
-  /* ── Reveal on scroll ────────────────────────────────────── */
-  const revealIO = new IntersectionObserver(
-    (entries, obs) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) {
-          e.target.classList.add("in");
-          obs.unobserve(e.target);
-        }
-      });
-    },
-    { threshold: 0.15 }
-  );
-  $$(".reveal").forEach((el) => revealIO.observe(el));
-
-  /* ── Animated counters ───────────────────────────────────── */
-  function formatNum(n, decimals) {
-    return decimals
-      ? n.toFixed(decimals)
-      : Math.round(n).toLocaleString("en-IN");
-  }
-  function animateCount(el) {
-    const target = parseFloat(el.dataset.count);
-    const decimals = parseInt(el.dataset.decimals || "0", 10);
-    if (prefersReduced) { el.textContent = formatNum(target, decimals); return; }
-    const dur = 1600;
-    const t0 = performance.now();
-    (function tick(t) {
-      const p = Math.min((t - t0) / dur, 1);
-      const eased = 1 - Math.pow(1 - p, 3);
-      el.textContent = formatNum(target * eased, decimals);
-      if (p < 1) requestAnimationFrame(tick);
-    })(t0);
-  }
-  const countIO = new IntersectionObserver(
-    (entries, obs) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) { animateCount(e.target); obs.unobserve(e.target); }
-      });
-    },
-    { threshold: 0.6 }
-  );
-  $$("[data-count]").forEach((el) => countIO.observe(el));
-
-  /* ── Open / closed live status ───────────────────────────── */
-  (function openStatus() {
-    const chip = $("#openStatus");
-    if (!chip) return;
-    const [oh, om] = chip.dataset.open.split(":").map(Number);
-    const [ch, cm] = chip.dataset.close.split(":").map(Number);
-    const now = new Date();
-    const mins = now.getHours() * 60 + now.getMinutes();
-    const open = mins >= oh * 60 + om && mins < ch * 60 + cm;
-    const fmt = (h, m) => {
-      const ampm = h >= 12 ? "PM" : "AM";
-      const h12 = ((h + 11) % 12) + 1;
-      return `${h12}:${String(m).padStart(2, "0")} ${ampm}`;
-    };
-    chip.textContent = open
-      ? `Open now · closes ${fmt(ch, cm)}`
-      : `Closed · opens ${fmt(oh, om)}`;
-    if (!open) chip.classList.add("closed");
-  })();
-
-  /* ── Popular times chart ─────────────────────────────────── */
-  (function popularTimes() {
-    const chart = $("#ptChart");
-    if (!chart) return;
-    // Busyness % for hours 9 AM → 9 PM (typical for a celebration hall)
-    const values = [12, 18, 30, 52, 68, 58, 34, 40, 55, 78, 90, 52, 18];
-    const now = new Date();
-    const currentHour = now.getHours();
-
-    $("#ptDay").textContent = "· " +
-      now.toLocaleDateString("en-IN", { weekday: "long" }) + "s";
-
-    values.forEach((v, i) => {
-      const bar = document.createElement("div");
-      bar.className = "pt-bar";
-      bar.style.height = Math.max(v, 6) + "%";
-      bar.dataset.hour = 9 + i;
-      if (9 + i === currentHour) bar.classList.add("live");
-      chart.appendChild(bar);
-    });
-
-    // Live chip: busyness right now
-    const liveChip = $("#ptLive");
-    const idx = currentHour - 9;
-    if (idx >= 0 && idx < values.length) {
-      const v = values[idx];
-      const label = v < 40 ? "Live · Not too busy" : v < 70 ? "Live · A bit busy" : "Live · Busy";
-      liveChip.innerHTML = "<i></i>" + label;
-    } else {
-      liveChip.classList.add("closed");
-      liveChip.innerHTML = "<i></i>Live · Closed now";
+  window.addEventListener("storage", (event) => {
+    if (event.key === storageKey || event.key === null) {
+      saved = readSaved();
+      setActionStatus(null);
+      renderSavedState();
+      if ($("#shortlistDialog").open) renderShortlist();
     }
-
-    const ptIO = new IntersectionObserver(
-      (entries, obs) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) { chart.classList.add("in"); obs.unobserve(chart); }
-        });
-      },
-      { threshold: 0.5 }
-    );
-    ptIO.observe(chart);
-  })();
-
-  /* ── Availability calendar ──────────────────────────────── */
-  const MONTHS = ["January","February","March","April","May","June",
-    "July","August","September","October","November","December"];
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const calState = {
-    y: today.getFullYear(),
-    m: today.getMonth(),
-    selected: null,
-  };
-  // Navigable window: current month → +4 months
-  const minKey = today.getFullYear() * 12 + today.getMonth();
-  const maxKey = minKey + 4;
-
-  const calDays = $("#calDays");
-  const calTitle = $("#calTitle");
-  const calPrev = $("#calPrev");
-  const calNext = $("#calNext");
-  const dateInput = $("#date");
-
-  const toKey = (y, m) => y * 12 + m;
-  const iso = (d) =>
-    d.getFullYear() + "-" +
-    String(d.getMonth() + 1).padStart(2, "0") + "-" +
-    String(d.getDate()).padStart(2, "0");
-
-  // Deterministic "booked" pattern (~30% of dates)
-  const isBooked = (y, m, d) => (d * 31 + (m + 1) * 17 + y) % 10 < 3;
-
-  function renderCalendar() {
-    const { y, m } = calState;
-    calTitle.textContent = `${MONTHS[m]} ${y}`;
-    calPrev.disabled = toKey(y, m) <= minKey;
-    calNext.disabled = toKey(y, m) >= maxKey;
-
-    calDays.innerHTML = "";
-    const startDow = new Date(y, m, 1).getDay();
-    const daysInMonth = new Date(y, m + 1, 0).getDate();
-    const todayIso = iso(today);
-
-    for (let i = 0; i < startDow; i++) {
-      const b = document.createElement("div");
-      b.className = "cal-day blank";
-      calDays.appendChild(b);
-    }
-    for (let d = 1; d <= daysInMonth; d++) {
-      const cell = document.createElement("button");
-      cell.type = "button";
-      cell.className = "cal-day";
-      cell.textContent = d;
-      cell.setAttribute("aria-label", `${d} ${MONTHS[m]} ${y}`);
-
-      const date = new Date(y, m, d);
-      const dIso = iso(date);
-
-      if (dIso < todayIso) {
-        cell.classList.add("disabled", "past");
-        cell.disabled = true;
-      } else if (isBooked(y, m, d)) {
-        cell.classList.add("disabled", "booked");
-        cell.disabled = true;
-        cell.setAttribute("aria-label", cell.getAttribute("aria-label") + " — already booked");
-      } else {
-        if (dIso === todayIso) cell.classList.add("today");
-        if (calState.selected && dIso === iso(calState.selected)) cell.classList.add("selected");
-        cell.addEventListener("click", () => {
-          calState.selected = date;
-          dateInput.value = dIso;
-          clearError(dateInput);
-          renderCalendar();
-        });
-      }
-      calDays.appendChild(cell);
-    }
-  }
-
-  calPrev.addEventListener("click", () => {
-    calState.m--;
-    if (calState.m < 0) { calState.m = 11; calState.y--; }
-    renderCalendar();
-  });
-  calNext.addEventListener("click", () => {
-    calState.m++;
-    if (calState.m > 11) { calState.m = 0; calState.y++; }
-    renderCalendar();
+    if (event.key === i18n.preferenceKey && !new URLSearchParams(location.search).has("lang")) applyLocale(event.newValue, false);
   });
 
-  if (dateInput) {
-    dateInput.min = iso(today);
-    dateInput.addEventListener("change", () => {
-      const v = dateInput.value;
-      if (!v) return;
-      const [y, m, d] = v.split("-").map(Number);
-      const date = new Date(y, m - 1, d);
-      if (date < today) { calState.selected = null; return; }
-      if (isBooked(y, m - 1, d)) {
-        showError(dateInput, "That date is already booked — pick another.");
-        calState.selected = null;
-      } else {
-        clearError(dateInput);
-        calState.selected = date;
-      }
-      // Sync calendar view to the chosen month if navigable
-      const key = toKey(y, m - 1);
-      if (key >= minKey && key <= maxKey) { calState.y = y; calState.m = m - 1; }
-      renderCalendar();
-    });
-  }
-  renderCalendar();
-
-  /* ── Booking form ────────────────────────────────────────── */
-  const form = $("#bookingForm");
-  const successPanel = $("#formSuccess");
-
-  function fieldOf(input) { return input.closest(".field"); }
-  function showError(input, msg) {
-    const f = fieldOf(input);
-    if (!f) return;
-    f.classList.add("error");
-    const err = f.querySelector(".err");
-    if (err) err.textContent = msg;
-  }
-  function clearError(input) {
-    const f = fieldOf(input);
-    if (!f) return;
-    f.classList.remove("error");
-    const err = f.querySelector(".err");
-    if (err) err.textContent = "";
-  }
-
-  function normalizePhone(raw) {
-    let p = raw.replace(/[\s\-()]/g, "");
-    if (p.startsWith("+91")) p = p.slice(3);
-    else if (p.startsWith("91") && p.length === 12) p = p.slice(2);
-    return p;
-  }
-
-  function validate() {
-    let ok = true;
-    let firstBad = null;
-
-    const occasion = $("#occasion");
-    if (!occasion.value) { showError(occasion, "Please choose an occasion."); ok = false; firstBad = firstBad || occasion; }
-    else clearError(occasion);
-
-    const date = $("#date");
-    if (!date.value) { showError(date, "Pick a preferred date."); ok = false; firstBad = firstBad || date; }
-    else if (new Date(date.value + "T00:00") < today) {
-      showError(date, "Date must be today or later."); ok = false; firstBad = firstBad || date;
-    } else clearError(date);
-
-    const guests = $("#guests");
-    const g = parseInt(guests.value, 10);
-    if (!guests.value || isNaN(g)) { showError(guests, "Roughly how many guests?"); ok = false; firstBad = firstBad || guests; }
-    else if (g < 50 || g > 1000) { showError(guests, "We host 50 – 1,000 guests."); ok = false; firstBad = firstBad || guests; }
-    else clearError(guests);
-
-    const name = $("#name");
-    if (name.value.trim().length < 2) { showError(name, "Please tell us your name."); ok = false; firstBad = firstBad || name; }
-    else clearError(name);
-
-    const phone = $("#phone");
-    const p = normalizePhone(phone.value);
-    if (!/^[6-9]\d{9}$/.test(p)) { showError(phone, "Enter a valid 10-digit mobile number."); ok = false; firstBad = firstBad || phone; }
-    else clearError(phone);
-
-    const email = $("#email");
-    if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim())) {
-      showError(email, "That email doesn't look right."); ok = false; firstBad = firstBad || email;
-    } else clearError(email);
-
-    if (!ok && firstBad) firstBad.focus();
-    return ok;
-  }
-
-  function prettyDate(isoStr) {
-    const d = new Date(isoStr + "T00:00");
-    return d.toLocaleDateString("en-IN", {
-      weekday: "short", day: "numeric", month: "short", year: "numeric",
-    });
-  }
-
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (!validate()) return;
-
-    const data = {
-      occasion: $("#occasion").value,
-      date: $("#date").value,
-      session: form.querySelector('input[name="session"]:checked').value,
-      guests: $("#guests").value,
-      name: $("#name").value.trim(),
-      phone: normalizePhone($("#phone").value),
-      email: $("#email").value.trim(),
-      notes: $("#notes").value.trim(),
-    };
-    const ref = "ARJ-" + Math.floor(1000 + Math.random() * 9000);
-
-    // Fill success summary
-    $("#bookingRef").textContent = ref;
-    $("#successSummary").innerHTML = [
-      ["Occasion", data.occasion],
-      ["Date", prettyDate(data.date)],
-      ["Session", data.session],
-      ["Guests", data.guests],
-      ["Name", data.name],
-      ["Phone", "+91 " + data.phone],
-    ].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
-
-    // Prefilled WhatsApp confirmation message
-    const msg =
-      `Hi Arjuna Celebrations Hall! I just sent a booking request (Ref: ${ref}).\n` +
-      `Occasion: ${data.occasion}\nDate: ${prettyDate(data.date)}\n` +
-      `Session: ${data.session}\nGuests: ${data.guests}\nName: ${data.name}`;
-    $("#waConfirm").href =
-      "https://wa.me/919689902501?text=" + encodeURIComponent(msg);
-
-    // Persist locally (demo — no backend)
-    try {
-      const all = JSON.parse(localStorage.getItem("arjunaBookings") || "[]");
-      all.push({ ref, ...data, at: new Date().toISOString() });
-      localStorage.setItem("arjunaBookings", JSON.stringify(all));
-    } catch (_) { /* private mode etc. */ }
-
-    form.hidden = true;
-    successPanel.hidden = false;
-    successPanel.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "center" });
-  });
-
-  $("#resetForm").addEventListener("click", () => {
-    form.reset();
-    form.hidden = false;
-    successPanel.hidden = true;
-    $$(".field.error", form).forEach((f) => f.classList.remove("error"));
-    form.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "center" });
-  });
-
-  // Clear errors as the user types
-  $$("input, select, textarea", form).forEach((el) =>
-    el.addEventListener("input", () => clearError(el))
-  );
-
-  /* ── Gallery lightbox ────────────────────────────────────── */
-  (function lightbox() {
-    const items = $$(".g-item");
-    if (!items.length) return;
-    const lb = $("#lightbox");
-    const lbImg = $("#lbImg");
-    const lbCaption = $("#lbCaption");
-    let idx = 0;
-
-    const IMAGES = items.map((it) => ({
-      src: $("img", it).src,
-      alt: $("img", it).alt,
-      caption: it.dataset.caption || "",
-    }));
-
-    function show(i) {
-      idx = (i + IMAGES.length) % IMAGES.length;
-      const im = IMAGES[idx];
-      lbImg.src = im.src;
-      lbImg.alt = im.alt;
-      lbCaption.textContent = im.caption;
-    }
-    function open(i) {
-      show(i);
-      lb.hidden = false;
-      document.body.style.overflow = "hidden";
-      $("#lbClose").focus();
-    }
-    function close() {
-      lb.hidden = true;
-      document.body.style.overflow = "";
-    }
-
-    items.forEach((it, i) => it.addEventListener("click", () => open(i)));
-    $("#lbClose").addEventListener("click", close);
-    $("#lbPrev").addEventListener("click", () => show(idx - 1));
-    $("#lbNext").addEventListener("click", () => show(idx + 1));
-    lb.addEventListener("click", (e) => { if (e.target === lb) close(); });
-    document.addEventListener("keydown", (e) => {
-      if (lb.hidden) return;
-      if (e.key === "Escape") close();
-      if (e.key === "ArrowLeft") show(idx - 1);
-      if (e.key === "ArrowRight") show(idx + 1);
-    });
-  })();
+  applyLocale(locale, false);
 })();
