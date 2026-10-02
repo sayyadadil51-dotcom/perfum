@@ -1,452 +1,514 @@
-/* ═══════════════════════════════════════════════════════════════
-   ARJUNA CELEBRATIONS HALL — interactions
-   ═══════════════════════════════════════════════════════════════ */
-(function () {
-  "use strict";
+/* Adersh Footwear — store */
 
-  const $ = (s, c) => (c || document).querySelector(s);
-  const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
-  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const PRODUCTS = [
+  {
+    id: "apex-runner",
+    name: "Apex Runner",
+    subtitle: "Cream mesh · gum sole",
+    price: 4890,
+    compare: 5690,
+    cats: ["sneakers", "men"],
+    badge: "New",
+    img: "images/apex-runner.jpg",
+    desc: "A daily runner in cream mesh and suede, finished with a cognac heel tab and a grippy gum sole. Light on the foot, loud in the room.",
+    sizes: [6, 7, 8, 9, 10, 11],
+    rating: 4.8,
+    reviews: 126,
+    featured: true,
+  },
+  {
+    id: "nightwalker",
+    name: "Nightwalker",
+    subtitle: "Matte black leather",
+    price: 5490,
+    cats: ["sneakers", "men", "formal"],
+    badge: "Bestseller",
+    img: "images/nightwalker.jpg",
+    desc: "An all-black leather court shoe that disappears under a kurta and holds its own with a suit. One pair, entire week.",
+    sizes: [6, 7, 8, 9, 10, 11, 12],
+    rating: 4.9,
+    reviews: 214,
+    featured: false,
+  },
+  {
+    id: "gold-court",
+    name: "Gold Court",
+    subtitle: "Ivory · champagne stripe",
+    price: 4290,
+    compare: 4990,
+    cats: ["sneakers", "women"],
+    badge: "New",
+    img: "images/gold-court.jpg",
+    desc: "A low court sneaker in ivory leather with a champagne gold stripe. Evening-adjacent, all-day comfortable.",
+    sizes: [3, 4, 5, 6, 7, 8],
+    rating: 4.7,
+    reviews: 98,
+    featured: true,
+  },
+  {
+    id: "velocity",
+    name: "Velocity",
+    subtitle: "Olive knit · air sole",
+    price: 6290,
+    cats: ["sport", "sneakers", "men"],
+    badge: "",
+    img: "images/velocity.jpg",
+    desc: "A performance runner in deep olive with burnt-orange piping and a translucent air sole. Built for the sea-link and the Sunday long run.",
+    sizes: [7, 8, 9, 10, 11, 12],
+    rating: 4.6,
+    reviews: 71,
+    featured: false,
+  },
+  {
+    id: "oxford-prime",
+    name: "Oxford Prime",
+    subtitle: "Cognac calf · cap toe",
+    price: 7490,
+    cats: ["formal", "men"],
+    badge: "Bestseller",
+    img: "images/oxford-prime.jpg",
+    desc: "Full-grain cognac calf, a closed lacing, a cap toe that takes a shine. The house oxford — lasted in Bandra, meant for decades.",
+    sizes: [6, 7, 8, 9, 10, 11],
+    rating: 4.9,
+    reviews: 188,
+    featured: false,
+  },
+  {
+    id: "loafer-noir",
+    name: "Loafer Noir",
+    subtitle: "Black penny · tan lining",
+    price: 6890,
+    cats: ["formal", "men"],
+    badge: "",
+    img: "images/loafer-noir.jpg",
+    desc: "A polished black penny loafer with a tan calf lining. Slip on, walk out. The quietest flex in the room.",
+    sizes: [6, 7, 8, 9, 10, 11],
+    rating: 4.8,
+    reviews: 142,
+    featured: false,
+  },
+  {
+    id: "chelsea-ember",
+    name: "Chelsea Ember",
+    subtitle: "Cognac leather · elastic",
+    price: 8290,
+    cats: ["boots", "men"],
+    badge: "New",
+    img: "images/chelsea-ember.jpg",
+    desc: "A chelsea in warm cognac with a lugged sole and a pull tab that actually works. Softens through a monsoon. Looks richer after.",
+    sizes: [6, 7, 8, 9, 10, 11],
+    rating: 4.9,
+    reviews: 163,
+    featured: true,
+  },
+  {
+    id: "desert-walk",
+    name: "Desert Walk",
+    subtitle: "Sand suede · crepe sole",
+    price: 5990,
+    cats: ["boots", "men"],
+    badge: "Low stock",
+    img: "images/desert-walk.jpg",
+    desc: "Tan suede chukkas on a crepe sole. The weekend boot — Goa, a gallery opening, a dusty train platform.",
+    sizes: [7, 8, 9, 10, 11],
+    rating: 4.7,
+    reviews: 87,
+    featured: false,
+  },
+  {
+    id: "silk-step",
+    name: "Silk Step",
+    subtitle: "Cognac stiletto",
+    price: 6490,
+    cats: ["women", "formal"],
+    badge: "New",
+    img: "images/silk-step.jpg",
+    desc: "A pointed-toe pump in cognac nappa. Slim, sure, unshowy. The heel you forget you are wearing until someone asks.",
+    sizes: [3, 4, 5, 6, 7, 8],
+    rating: 4.8,
+    reviews: 119,
+    featured: false,
+  },
+];
 
-  /* ── Footer year ─────────────────────────────────────────── */
-  $("#year").textContent = new Date().getFullYear();
+const FREE_SHIP = 2999;
+const SHIP_FEE = 149;
+const inr = (n) => "₹" + n.toLocaleString("en-IN");
 
-  /* ── Navbar: scroll state + mobile menu + active link ────── */
-  const navbar = $("#navbar");
-  const onScroll = () => navbar.classList.toggle("scrolled", window.scrollY > 10);
-  window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
-  const navToggle = $("#navToggle");
-  const navLinks = $("#navLinks");
-  navToggle.addEventListener("click", () => {
-    const open = navLinks.classList.toggle("open");
-    navToggle.setAttribute("aria-expanded", String(open));
-    navToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-  });
-  $$("a", navLinks).forEach((a) =>
-    a.addEventListener("click", () => {
-      navLinks.classList.remove("open");
-      navToggle.setAttribute("aria-expanded", "false");
-    })
-  );
+let filter = "all";
+let query = "";
+let activeProduct = null;
+let activeSize = null;
+let cart = loadCart();
 
-  const sectionIds = ["overview", "gallery", "packages", "reviews", "visit", "faq"];
-  const linkMap = new Map();
-  $$("a", navLinks).forEach((a) => {
-    const id = a.getAttribute("href").slice(1);
-    if (sectionIds.includes(id)) linkMap.set(id, a);
-  });
-  const activeIO = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) {
-          linkMap.forEach((a) => a.classList.remove("active"));
-          const link = linkMap.get(e.target.id);
-          if (link) link.classList.add("active");
-        }
-      });
-    },
-    { rootMargin: "-35% 0px -55% 0px" }
-  );
-  sectionIds.forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) activeIO.observe(el);
-  });
-
-  /* ── Reveal on scroll ────────────────────────────────────── */
-  const revealIO = new IntersectionObserver(
-    (entries, obs) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) {
-          e.target.classList.add("in");
-          obs.unobserve(e.target);
-        }
-      });
-    },
-    { threshold: 0.15 }
-  );
-  $$(".reveal").forEach((el) => revealIO.observe(el));
-
-  /* ── Animated counters ───────────────────────────────────── */
-  function formatNum(n, decimals) {
-    return decimals
-      ? n.toFixed(decimals)
-      : Math.round(n).toLocaleString("en-IN");
+function loadCart() {
+  try {
+    return JSON.parse(localStorage.getItem("adersh-cart") || "[]");
+  } catch {
+    return [];
   }
-  function animateCount(el) {
-    const target = parseFloat(el.dataset.count);
-    const decimals = parseInt(el.dataset.decimals || "0", 10);
-    if (prefersReduced) { el.textContent = formatNum(target, decimals); return; }
-    const dur = 1600;
-    const t0 = performance.now();
-    (function tick(t) {
-      const p = Math.min((t - t0) / dur, 1);
-      const eased = 1 - Math.pow(1 - p, 3);
-      el.textContent = formatNum(target * eased, decimals);
-      if (p < 1) requestAnimationFrame(tick);
-    })(t0);
+}
+function saveCart() {
+  localStorage.setItem("adersh-cart", JSON.stringify(cart));
+}
+
+function badgeClass(b) {
+  if (b === "New") return "new";
+  if (b === "Low stock") return "low";
+  return "";
+}
+
+function productCard(p, featured = false) {
+  const el = document.createElement("button");
+  el.type = "button";
+  el.className = featured ? "f-card" : "p-card";
+  el.dataset.id = p.id;
+  const price = p.compare
+    ? `${inr(p.price)}<span class="was">${inr(p.compare)}</span>`
+    : inr(p.price);
+  const badge = p.badge ? `<span class="badge ${badgeClass(p.badge)}">${p.badge}</span>` : "";
+  if (featured) {
+    el.innerHTML = `
+      <img src="${p.img}" alt="${p.name}" />
+      <div class="f-body">
+        <p class="kicker">${p.badge || p.cats[0]}</p>
+        <h3>${p.name}</h3>
+        <p class="sub">${p.subtitle}</p>
+        <p class="price">${price}</p>
+      </div>`;
+  } else {
+    el.innerHTML = `
+      <div class="p-img">
+        <img src="${p.img}" alt="${p.name}" />
+        ${badge}
+        <span class="quick">Quick view</span>
+      </div>
+      <h3>${p.name}</h3>
+      <p class="sub">${p.subtitle}</p>
+      <p class="price">${price}</p>`;
   }
-  const countIO = new IntersectionObserver(
-    (entries, obs) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) { animateCount(e.target); obs.unobserve(e.target); }
-      });
-    },
-    { threshold: 0.6 }
-  );
-  $$("[data-count]").forEach((el) => countIO.observe(el));
+  el.addEventListener("click", () => openProduct(p.id));
+  return el;
+}
 
-  /* ── Open / closed live status ───────────────────────────── */
-  (function openStatus() {
-    const chip = $("#openStatus");
-    if (!chip) return;
-    const [oh, om] = chip.dataset.open.split(":").map(Number);
-    const [ch, cm] = chip.dataset.close.split(":").map(Number);
-    const now = new Date();
-    const mins = now.getHours() * 60 + now.getMinutes();
-    const open = mins >= oh * 60 + om && mins < ch * 60 + cm;
-    const fmt = (h, m) => {
-      const ampm = h >= 12 ? "PM" : "AM";
-      const h12 = ((h + 11) % 12) + 1;
-      return `${h12}:${String(m).padStart(2, "0")} ${ampm}`;
-    };
-    chip.textContent = open
-      ? `Open now · closes ${fmt(ch, cm)}`
-      : `Closed · opens ${fmt(oh, om)}`;
-    if (!open) chip.classList.add("closed");
-  })();
+function visibleProducts() {
+  const q = query.trim().toLowerCase();
+  return PRODUCTS.filter((p) => {
+    const okFilter = filter === "all" || p.cats.includes(filter);
+    const okQuery =
+      !q ||
+      p.name.toLowerCase().includes(q) ||
+      p.subtitle.toLowerCase().includes(q) ||
+      p.cats.join(" ").includes(q) ||
+      p.desc.toLowerCase().includes(q);
+    return okFilter && okQuery;
+  });
+}
 
-  /* ── Popular times chart ─────────────────────────────────── */
-  (function popularTimes() {
-    const chart = $("#ptChart");
-    if (!chart) return;
-    // Busyness % for hours 9 AM → 9 PM (typical for a celebration hall)
-    const values = [12, 18, 30, 52, 68, 58, 34, 40, 55, 78, 90, 52, 18];
-    const now = new Date();
-    const currentHour = now.getHours();
+function renderShop() {
+  const grid = $("#productGrid");
+  const empty = $("#emptyState");
+  const list = visibleProducts();
+  grid.innerHTML = "";
+  list.forEach((p) => grid.appendChild(productCard(p)));
+  empty.hidden = list.length > 0;
+  $("#shopCount").textContent = `${list.length} pair${list.length === 1 ? "" : "s"}`;
+}
 
-    $("#ptDay").textContent = "· " +
-      now.toLocaleDateString("en-IN", { weekday: "long" }) + "s";
+function renderFeatured() {
+  const row = $("#featuredRow");
+  row.innerHTML = "";
+  PRODUCTS.filter((p) => p.featured).forEach((p) => row.appendChild(productCard(p, true)));
+}
 
-    values.forEach((v, i) => {
-      const bar = document.createElement("div");
-      bar.className = "pt-bar";
-      bar.style.height = Math.max(v, 6) + "%";
-      bar.dataset.hour = 9 + i;
-      if (9 + i === currentHour) bar.classList.add("live");
-      chart.appendChild(bar);
+function openProduct(id) {
+  const p = PRODUCTS.find((x) => x.id === id);
+  if (!p) return;
+  activeProduct = p;
+  activeSize = null;
+  $("#pmImg").src = p.img;
+  $("#pmImg").alt = p.name;
+  $("#pmName").textContent = p.name;
+  $("#pmSub").textContent = p.subtitle;
+  $("#pmDesc").textContent = p.desc;
+  $("#pmBadge").textContent = p.badge || p.cats[0];
+  $("#pmPrice").innerHTML = p.compare
+    ? `${inr(p.price)} <span class="was">${inr(p.compare)}</span>`
+    : inr(p.price);
+  $("#pmMeta").textContent = `${p.rating} ★ · ${p.reviews} reviews · UK sizing`;
+  $("#pmQty").value = 1;
+  const sizes = $("#pmSizes");
+  sizes.innerHTML = "";
+  p.sizes.forEach((s) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "size";
+    b.textContent = s;
+    b.addEventListener("click", () => {
+      activeSize = s;
+      $$(".size", sizes).forEach((x) => x.classList.remove("is-on"));
+      b.classList.add("is-on");
     });
+    sizes.appendChild(b);
+  });
+  $("#productModal").hidden = false;
+  document.body.style.overflow = "hidden";
+}
 
-    // Live chip: busyness right now
-    const liveChip = $("#ptLive");
-    const idx = currentHour - 9;
-    if (idx >= 0 && idx < values.length) {
-      const v = values[idx];
-      const label = v < 40 ? "Live · Not too busy" : v < 70 ? "Live · A bit busy" : "Live · Busy";
-      liveChip.innerHTML = "<i></i>" + label;
-    } else {
-      liveChip.classList.add("closed");
-      liveChip.innerHTML = "<i></i>Live · Closed now";
-    }
+function closeProduct() {
+  $("#productModal").hidden = true;
+  if ($("#cartDrawer").getAttribute("aria-hidden") === "true" && $("#checkModal").hidden) {
+    document.body.style.overflow = "";
+  }
+}
 
-    const ptIO = new IntersectionObserver(
-      (entries, obs) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) { chart.classList.add("in"); obs.unobserve(chart); }
-        });
-      },
-      { threshold: 0.5 }
-    );
-    ptIO.observe(chart);
-  })();
+function cartCount() {
+  return cart.reduce((n, i) => n + i.qty, 0);
+}
+function cartSubtotal() {
+  return cart.reduce((n, i) => n + i.price * i.qty, 0);
+}
 
-  /* ── Availability calendar ──────────────────────────────── */
-  const MONTHS = ["January","February","March","April","May","June",
-    "July","August","September","October","November","December"];
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+function renderCart() {
+  const count = cartCount();
+  const badge = $("#cartCount");
+  badge.textContent = count;
+  badge.hidden = count === 0;
 
-  const calState = {
-    y: today.getFullYear(),
-    m: today.getMonth(),
-    selected: null,
-  };
-  // Navigable window: current month → +4 months
-  const minKey = today.getFullYear() * 12 + today.getMonth();
-  const maxKey = minKey + 4;
+  const body = $("#cartBody");
+  const foot = $("#cartFoot");
+  const ship = $("#shipNote");
 
-  const calDays = $("#calDays");
-  const calTitle = $("#calTitle");
-  const calPrev = $("#calPrev");
-  const calNext = $("#calNext");
-  const dateInput = $("#date");
-
-  const toKey = (y, m) => y * 12 + m;
-  const iso = (d) =>
-    d.getFullYear() + "-" +
-    String(d.getMonth() + 1).padStart(2, "0") + "-" +
-    String(d.getDate()).padStart(2, "0");
-
-  // Deterministic "booked" pattern (~30% of dates)
-  const isBooked = (y, m, d) => (d * 31 + (m + 1) * 17 + y) % 10 < 3;
-
-  function renderCalendar() {
-    const { y, m } = calState;
-    calTitle.textContent = `${MONTHS[m]} ${y}`;
-    calPrev.disabled = toKey(y, m) <= minKey;
-    calNext.disabled = toKey(y, m) >= maxKey;
-
-    calDays.innerHTML = "";
-    const startDow = new Date(y, m, 1).getDay();
-    const daysInMonth = new Date(y, m + 1, 0).getDate();
-    const todayIso = iso(today);
-
-    for (let i = 0; i < startDow; i++) {
-      const b = document.createElement("div");
-      b.className = "cal-day blank";
-      calDays.appendChild(b);
-    }
-    for (let d = 1; d <= daysInMonth; d++) {
-      const cell = document.createElement("button");
-      cell.type = "button";
-      cell.className = "cal-day";
-      cell.textContent = d;
-      cell.setAttribute("aria-label", `${d} ${MONTHS[m]} ${y}`);
-
-      const date = new Date(y, m, d);
-      const dIso = iso(date);
-
-      if (dIso < todayIso) {
-        cell.classList.add("disabled", "past");
-        cell.disabled = true;
-      } else if (isBooked(y, m, d)) {
-        cell.classList.add("disabled", "booked");
-        cell.disabled = true;
-        cell.setAttribute("aria-label", cell.getAttribute("aria-label") + " — already booked");
-      } else {
-        if (dIso === todayIso) cell.classList.add("today");
-        if (calState.selected && dIso === iso(calState.selected)) cell.classList.add("selected");
-        cell.addEventListener("click", () => {
-          calState.selected = date;
-          dateInput.value = dIso;
-          clearError(dateInput);
-          renderCalendar();
-        });
-      }
-      calDays.appendChild(cell);
-    }
+  if (!cart.length) {
+    body.innerHTML = `<p class="cart-empty">Your bag is empty. The drop is waiting.</p>`;
+    foot.hidden = true;
+    ship.textContent = `Free shipping over ${inr(FREE_SHIP)}.`;
+    return;
   }
 
-  calPrev.addEventListener("click", () => {
-    calState.m--;
-    if (calState.m < 0) { calState.m = 11; calState.y--; }
-    renderCalendar();
-  });
-  calNext.addEventListener("click", () => {
-    calState.m++;
-    if (calState.m > 11) { calState.m = 0; calState.y++; }
-    renderCalendar();
+  body.innerHTML = "";
+  cart.forEach((item, idx) => {
+    const row = document.createElement("div");
+    row.className = "cart-row";
+    row.innerHTML = `
+      <img src="${item.img}" alt="" />
+      <div>
+        <h4>${item.name}</h4>
+        <p class="meta">UK ${item.size} · ${inr(item.price)}</p>
+        <div class="qty" data-idx="${idx}">
+          <button type="button" data-act="-">−</button>
+          <input type="text" readonly value="${item.qty}" />
+          <button type="button" data-act="+">+</button>
+        </div>
+        <button class="rm" type="button" data-rm="${idx}">Remove</button>
+      </div>
+      <strong>${inr(item.price * item.qty)}</strong>`;
+    body.appendChild(row);
   });
 
-  if (dateInput) {
-    dateInput.min = iso(today);
-    dateInput.addEventListener("change", () => {
-      const v = dateInput.value;
-      if (!v) return;
-      const [y, m, d] = v.split("-").map(Number);
-      const date = new Date(y, m - 1, d);
-      if (date < today) { calState.selected = null; return; }
-      if (isBooked(y, m - 1, d)) {
-        showError(dateInput, "That date is already booked — pick another.");
-        calState.selected = null;
-      } else {
-        clearError(dateInput);
-        calState.selected = date;
-      }
-      // Sync calendar view to the chosen month if navigable
-      const key = toKey(y, m - 1);
-      if (key >= minKey && key <= maxKey) { calState.y = y; calState.m = m - 1; }
-      renderCalendar();
+  const sub = cartSubtotal();
+  const shipping = sub >= FREE_SHIP ? 0 : SHIP_FEE;
+  $("#subtotal").textContent = inr(sub);
+  $("#shipping").textContent = shipping === 0 ? "Free" : inr(shipping);
+  $("#grand").textContent = inr(sub + shipping);
+  foot.hidden = false;
+
+  const left = FREE_SHIP - sub;
+  ship.textContent =
+    left > 0
+      ? `${inr(left)} more for free shipping.`
+      : "Free shipping unlocked.";
+}
+
+function addToCart() {
+  if (!activeProduct) return;
+  if (activeSize == null) {
+    toast("Choose a UK size first.");
+    return;
+  }
+  const qty = Math.max(1, Math.min(6, parseInt($("#pmQty").value, 10) || 1));
+  const key = activeProduct.id + "-" + activeSize;
+  const existing = cart.find((i) => i.key === key);
+  if (existing) existing.qty = Math.min(6, existing.qty + qty);
+  else {
+    cart.push({
+      key,
+      id: activeProduct.id,
+      name: activeProduct.name,
+      img: activeProduct.img,
+      price: activeProduct.price,
+      size: activeSize,
+      qty,
     });
   }
-  renderCalendar();
+  saveCart();
+  renderCart();
+  closeProduct();
+  openCart();
+  toast(`${activeProduct.name} · UK ${activeSize} added.`);
+}
 
-  /* ── Booking form ────────────────────────────────────────── */
-  const form = $("#bookingForm");
-  const successPanel = $("#formSuccess");
+function openCart() {
+  $("#overlay").hidden = false;
+  $("#cartDrawer").classList.add("is-open");
+  $("#cartDrawer").setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+}
+function closeCart() {
+  $("#overlay").hidden = true;
+  $("#cartDrawer").classList.remove("is-open");
+  $("#cartDrawer").setAttribute("aria-hidden", "true");
+  if ($("#productModal").hidden && $("#checkModal").hidden) document.body.style.overflow = "";
+}
 
-  function fieldOf(input) { return input.closest(".field"); }
-  function showError(input, msg) {
-    const f = fieldOf(input);
-    if (!f) return;
-    f.classList.add("error");
-    const err = f.querySelector(".err");
-    if (err) err.textContent = msg;
-  }
-  function clearError(input) {
-    const f = fieldOf(input);
-    if (!f) return;
-    f.classList.remove("error");
-    const err = f.querySelector(".err");
-    if (err) err.textContent = "";
-  }
+function toast(msg) {
+  const t = $("#toast");
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(toast._id);
+  toast._id = setTimeout(() => {
+    t.hidden = true;
+  }, 2400);
+}
 
-  function normalizePhone(raw) {
-    let p = raw.replace(/[\s\-()]/g, "");
-    if (p.startsWith("+91")) p = p.slice(3);
-    else if (p.startsWith("91") && p.length === 12) p = p.slice(2);
-    return p;
-  }
+function openCheckout() {
+  if (!cart.length) return;
+  closeCart();
+  $("#checkFormWrap").hidden = false;
+  $("#checkDone").hidden = true;
+  $("#checkModal").hidden = false;
+  document.body.style.overflow = "hidden";
+}
+function closeCheckout() {
+  $("#checkModal").hidden = true;
+  document.body.style.overflow = "";
+}
 
-  function validate() {
-    let ok = true;
-    let firstBad = null;
+/* ── wire up ── */
+renderFeatured();
+renderShop();
+renderCart();
 
-    const occasion = $("#occasion");
-    if (!occasion.value) { showError(occasion, "Please choose an occasion."); ok = false; firstBad = firstBad || occasion; }
-    else clearError(occasion);
+$("#navbar").classList.toggle("is-scrolled", window.scrollY > 8);
+window.addEventListener("scroll", () => {
+  $("#navbar").classList.toggle("is-scrolled", window.scrollY > 8);
+});
 
-    const date = $("#date");
-    if (!date.value) { showError(date, "Pick a preferred date."); ok = false; firstBad = firstBad || date; }
-    else if (new Date(date.value + "T00:00") < today) {
-      showError(date, "Date must be today or later."); ok = false; firstBad = firstBad || date;
-    } else clearError(date);
-
-    const guests = $("#guests");
-    const g = parseInt(guests.value, 10);
-    if (!guests.value || isNaN(g)) { showError(guests, "Roughly how many guests?"); ok = false; firstBad = firstBad || guests; }
-    else if (g < 50 || g > 1000) { showError(guests, "We host 50 – 1,000 guests."); ok = false; firstBad = firstBad || guests; }
-    else clearError(guests);
-
-    const name = $("#name");
-    if (name.value.trim().length < 2) { showError(name, "Please tell us your name."); ok = false; firstBad = firstBad || name; }
-    else clearError(name);
-
-    const phone = $("#phone");
-    const p = normalizePhone(phone.value);
-    if (!/^[6-9]\d{9}$/.test(p)) { showError(phone, "Enter a valid 10-digit mobile number."); ok = false; firstBad = firstBad || phone; }
-    else clearError(phone);
-
-    const email = $("#email");
-    if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim())) {
-      showError(email, "That email doesn't look right."); ok = false; firstBad = firstBad || email;
-    } else clearError(email);
-
-    if (!ok && firstBad) firstBad.focus();
-    return ok;
-  }
-
-  function prettyDate(isoStr) {
-    const d = new Date(isoStr + "T00:00");
-    return d.toLocaleDateString("en-IN", {
-      weekday: "short", day: "numeric", month: "short", year: "numeric",
-    });
-  }
-
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (!validate()) return;
-
-    const data = {
-      occasion: $("#occasion").value,
-      date: $("#date").value,
-      session: form.querySelector('input[name="session"]:checked').value,
-      guests: $("#guests").value,
-      name: $("#name").value.trim(),
-      phone: normalizePhone($("#phone").value),
-      email: $("#email").value.trim(),
-      notes: $("#notes").value.trim(),
-    };
-    const ref = "ARJ-" + Math.floor(1000 + Math.random() * 9000);
-
-    // Fill success summary
-    $("#bookingRef").textContent = ref;
-    $("#successSummary").innerHTML = [
-      ["Occasion", data.occasion],
-      ["Date", prettyDate(data.date)],
-      ["Session", data.session],
-      ["Guests", data.guests],
-      ["Name", data.name],
-      ["Phone", "+91 " + data.phone],
-    ].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
-
-    // Prefilled WhatsApp confirmation message
-    const msg =
-      `Hi Arjuna Celebrations Hall! I just sent a booking request (Ref: ${ref}).\n` +
-      `Occasion: ${data.occasion}\nDate: ${prettyDate(data.date)}\n` +
-      `Session: ${data.session}\nGuests: ${data.guests}\nName: ${data.name}`;
-    $("#waConfirm").href =
-      "https://wa.me/919689902501?text=" + encodeURIComponent(msg);
-
-    // Persist locally (demo — no backend)
-    try {
-      const all = JSON.parse(localStorage.getItem("arjunaBookings") || "[]");
-      all.push({ ref, ...data, at: new Date().toISOString() });
-      localStorage.setItem("arjunaBookings", JSON.stringify(all));
-    } catch (_) { /* private mode etc. */ }
-
-    form.hidden = true;
-    successPanel.hidden = false;
-    successPanel.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "center" });
+$$("#filters .chip").forEach((chip) => {
+  chip.addEventListener("click", () => {
+    filter = chip.dataset.filter;
+    $$("#filters .chip").forEach((c) => c.classList.toggle("is-on", c === chip));
+    renderShop();
   });
+});
 
-  $("#resetForm").addEventListener("click", () => {
-    form.reset();
-    form.hidden = false;
-    successPanel.hidden = true;
-    $$(".field.error", form).forEach((f) => f.classList.remove("error"));
-    form.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "center" });
+$$(".cat-card").forEach((card) => {
+  card.addEventListener("click", () => {
+    filter = card.dataset.filter;
+    $$("#filters .chip").forEach((c) => c.classList.toggle("is-on", c.dataset.filter === filter));
+    renderShop();
+    $("#shop").scrollIntoView({ behavior: "smooth" });
   });
+});
 
-  // Clear errors as the user types
-  $$("input, select, textarea", form).forEach((el) =>
-    el.addEventListener("input", () => clearError(el))
-  );
+const searchBar = $("#searchBar");
+$("#searchBtn").addEventListener("click", () => {
+  const open = searchBar.hidden;
+  searchBar.hidden = !open;
+  if (open) $("#searchInput").focus();
+});
+$("#searchClose").addEventListener("click", () => {
+  searchBar.hidden = true;
+  query = "";
+  $("#searchInput").value = "";
+  renderShop();
+});
+$("#searchInput").addEventListener("input", (e) => {
+  query = e.target.value;
+  filter = "all";
+  $$("#filters .chip").forEach((c) => c.classList.toggle("is-on", c.dataset.filter === "all"));
+  renderShop();
+});
 
-  /* ── Gallery lightbox ────────────────────────────────────── */
-  (function lightbox() {
-    const items = $$(".g-item");
-    if (!items.length) return;
-    const lb = $("#lightbox");
-    const lbImg = $("#lbImg");
-    const lbCaption = $("#lbCaption");
-    let idx = 0;
+const navToggle = $("#navToggle");
+const mobileMenu = $("#mobileMenu");
+navToggle.addEventListener("click", () => {
+  const open = mobileMenu.hidden;
+  mobileMenu.hidden = !open;
+  navToggle.classList.toggle("is-open", open);
+  navToggle.setAttribute("aria-expanded", String(open));
+});
+$$("#mobileMenu a").forEach((a) =>
+  a.addEventListener("click", () => {
+    mobileMenu.hidden = true;
+    navToggle.classList.remove("is-open");
+  })
+);
 
-    const IMAGES = items.map((it) => ({
-      src: $("img", it).src,
-      alt: $("img", it).alt,
-      caption: it.dataset.caption || "",
-    }));
+$("#cartBtn").addEventListener("click", openCart);
+$("#cartClose").addEventListener("click", closeCart);
+$("#overlay").addEventListener("click", closeCart);
+$("#modalClose").addEventListener("click", closeProduct);
+$("#productModal").addEventListener("click", (e) => {
+  if (e.target === $("#productModal")) closeProduct();
+});
+$("#addBtn").addEventListener("click", addToCart);
+$("#qtyMinus").addEventListener("click", () => {
+  const n = Math.max(1, (parseInt($("#pmQty").value, 10) || 1) - 1);
+  $("#pmQty").value = n;
+});
+$("#qtyPlus").addEventListener("click", () => {
+  const n = Math.min(6, (parseInt($("#pmQty").value, 10) || 1) + 1);
+  $("#pmQty").value = n;
+});
 
-    function show(i) {
-      idx = (i + IMAGES.length) % IMAGES.length;
-      const im = IMAGES[idx];
-      lbImg.src = im.src;
-      lbImg.alt = im.alt;
-      lbCaption.textContent = im.caption;
-    }
-    function open(i) {
-      show(i);
-      lb.hidden = false;
-      document.body.style.overflow = "hidden";
-      $("#lbClose").focus();
-    }
-    function close() {
-      lb.hidden = true;
-      document.body.style.overflow = "";
-    }
+$("#cartBody").addEventListener("click", (e) => {
+  const rm = e.target.closest("[data-rm]");
+  if (rm) {
+    cart.splice(Number(rm.dataset.rm), 1);
+    saveCart();
+    renderCart();
+    return;
+  }
+  const act = e.target.closest("[data-act]");
+  if (!act) return;
+  const idx = Number(act.parentElement.dataset.idx);
+  if (act.dataset.act === "+") cart[idx].qty = Math.min(6, cart[idx].qty + 1);
+  else cart[idx].qty = Math.max(1, cart[idx].qty - 1);
+  saveCart();
+  renderCart();
+});
 
-    items.forEach((it, i) => it.addEventListener("click", () => open(i)));
-    $("#lbClose").addEventListener("click", close);
-    $("#lbPrev").addEventListener("click", () => show(idx - 1));
-    $("#lbNext").addEventListener("click", () => show(idx + 1));
-    lb.addEventListener("click", (e) => { if (e.target === lb) close(); });
-    document.addEventListener("keydown", (e) => {
-      if (lb.hidden) return;
-      if (e.key === "Escape") close();
-      if (e.key === "ArrowLeft") show(idx - 1);
-      if (e.key === "ArrowRight") show(idx + 1);
-    });
-  })();
-})();
+$("#checkoutBtn").addEventListener("click", openCheckout);
+$("#checkClose").addEventListener("click", closeCheckout);
+$("#checkModal").addEventListener("click", (e) => {
+  if (e.target === $("#checkModal")) closeCheckout();
+});
+$("#checkForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const ref = "AF-" + Math.floor(100000 + Math.random() * 900000);
+  $("#orderRef").textContent = `Order ${ref} · ${inr(cartSubtotal() + (cartSubtotal() >= FREE_SHIP ? 0 : SHIP_FEE))} · ${cartCount()} pair${cartCount() === 1 ? "" : "s"}`;
+  cart = [];
+  saveCart();
+  renderCart();
+  $("#checkFormWrap").hidden = true;
+  $("#checkDone").hidden = false;
+  e.target.reset();
+});
+$("#doneClose").addEventListener("click", closeCheckout);
+
+$("#newsForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  toast("You are on the list. Next drop, first look.");
+  e.target.reset();
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  if (!$("#checkModal").hidden) closeCheckout();
+  else if (!$("#productModal").hidden) closeProduct();
+  else closeCart();
+});
