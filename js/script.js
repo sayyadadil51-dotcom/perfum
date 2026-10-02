@@ -264,12 +264,18 @@ function openProduct(id) {
     });
     sizes.appendChild(b);
   });
-  $("#productModal").hidden = false;
+  const modal = $("#productModal");
+  modal.classList.add("is-open");
+  modal.hidden = false;
+  modal.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
 }
 
 function closeProduct() {
-  $("#productModal").hidden = true;
+  const modal = $("#productModal");
+  modal.classList.remove("is-open");
+  modal.hidden = true;
+  modal.setAttribute("aria-hidden", "true");
   if ($("#cartDrawer").getAttribute("aria-hidden") === "true") {
     document.body.style.overflow = "";
   }
@@ -398,6 +404,8 @@ function openCheckout() {
 }
 
 /* ── wire up ── */
+$("#productModal").classList.remove("is-open");
+$("#productModal").hidden = true;
 renderFeatured();
 renderShop();
 renderCart();

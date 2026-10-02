@@ -675,11 +675,15 @@ em { font-style: italic; font-weight: 400; color: var(--cognac); }
 
 /* ── Modal ── */
 .modal {
+  display: none !important;
   position: fixed; inset: 0; z-index: 80;
   background: rgba(17, 14, 12, 0.5);
   backdrop-filter: blur(6px);
-  display: grid; place-items: center;
+  place-items: center;
   padding: 1.2rem;
+}
+.modal.is-open {
+  display: grid !important;
 }
 .modal-card {
   background: var(--paper);
