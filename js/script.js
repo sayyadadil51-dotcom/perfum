@@ -466,11 +466,19 @@ $$("#mobileMenu a").forEach((a) =>
 );
 
 $("#cartBtn").addEventListener("click", openCart);
-$("#cartClose").addEventListener("click", closeCart);
+$("#cartClose").addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  closeCart();
+});
 $("#overlay").addEventListener("click", closeCart);
-$("#modalClose").addEventListener("click", closeProduct);
+$("#modalClose").addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  closeProduct();
+});
 $("#productModal").addEventListener("click", (e) => {
-  if (e.target === $("#productModal")) closeProduct();
+  if (e.target === $("#productModal") || e.target.closest("#modalClose")) closeProduct();
 });
 $("#addBtn").addEventListener("click", addToCart);
 $("#qtyMinus").addEventListener("click", () => {
@@ -501,9 +509,13 @@ $("#cartBody").addEventListener("click", (e) => {
 });
 
 $("#checkoutBtn").addEventListener("click", openCheckout);
-$("#checkClose").addEventListener("click", closeCheckout);
+$("#checkClose").addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  closeCheckout();
+});
 $("#checkModal").addEventListener("click", (e) => {
-  if (e.target === $("#checkModal")) closeCheckout();
+  if (e.target === $("#checkModal") || e.target.closest("#checkClose")) closeCheckout();
 });
 $("#checkForm").addEventListener("submit", (e) => {
   e.preventDefault();

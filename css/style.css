@@ -209,6 +209,7 @@ em { font-style: italic; font-weight: 400; color: var(--cognac); }
   width: 20px; height: 20px;
   fill: none; stroke: currentColor; stroke-width: 1.7;
   stroke-linecap: round; stroke-linejoin: round;
+  pointer-events: none;
 }
 .cart-count {
   position: absolute; top: 4px; right: 4px;
@@ -691,7 +692,22 @@ em { font-style: italic; font-weight: 400; color: var(--cognac); }
   position: relative;
   box-shadow: var(--shadow);
 }
-.modal-x { position: absolute; top: 12px; right: 12px; z-index: 2; background: var(--cream); }
+.modal-x {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 20;
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  justify-self: end;
+  align-self: start;
+  width: 44px;
+  height: 44px;
+  background: var(--cream);
+  box-shadow: 0 4px 16px rgba(17, 14, 12, 0.12);
+  pointer-events: auto;
+  cursor: pointer;
+}
 .modal-img { background: var(--bg); }
 .modal-img img { width: 100%; height: 100%; object-fit: cover; min-height: 320px; }
 .modal-info { padding: 2rem 1.8rem; }
@@ -724,8 +740,14 @@ em { font-style: italic; font-weight: 400; color: var(--cognac); }
 }
 .qty input::-webkit-outer-spin-button,
 .qty input::-webkit-inner-spin-button { appearance: none; }
-.check-card { grid-template-columns: 1fr; max-width: 520px; padding: 2.2rem 2rem; }
-.check-card h2 { font-size: 2.2rem; margin-bottom: 1rem; }
+.check-card {
+  display: block;
+  grid-template-columns: none;
+  max-width: 520px;
+  padding: 2.2rem 2rem;
+  position: relative;
+}
+.check-card h2 { font-size: 2.2rem; margin-bottom: 1rem; padding-right: 2.6rem; }
 #checkForm { display: grid; gap: 0.7rem; }
 #checkForm label { display: grid; gap: 0.3rem; font-size: 0.8rem; color: var(--muted); }
 #checkForm input, #checkForm textarea {
