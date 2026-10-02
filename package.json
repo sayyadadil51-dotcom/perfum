@@ -1,0 +1,14 @@
+{
+  "name": "ym-devnikar-store",
+  "version": "1.0.0",
+  "private": true,
+  "description": "An editorial-style, static clothing storefront for Y. M. Devnikar, Udgir.",
+  "scripts": {
+    "start": "python3 serve.py --host 0.0.0.0 --port 8000",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.11.1",
+    "@playwright/test": "1.63.0"
+  }
+}
