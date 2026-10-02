@@ -144,9 +144,19 @@ let activeProduct = null;
 let activeSize = null;
 let cart = loadCart();
 
+const searchBar = $("#searchBar");
+const navToggle = $("#navToggle");
+const mobileMenu = $("#mobileMenu");
+function closeMobileMenu() {
+  mobileMenu.hidden = true;
+  navToggle.classList.remove("is-open");
+  navToggle.setAttribute("aria-expanded", "false");
+}
+
 function loadCart() {
   try {
-    return JSON.parse(localStorage.getItem("adersh-cart") || "[]");
+    const data = JSON.parse(localStorage.getItem("adersh-cart") || "[]");
+    return Array.isArray(data) ? data : [];
   } catch {
     return [];
   }
@@ -352,6 +362,8 @@ function addToCart() {
 }
 
 function openCart() {
+  closeMobileMenu();
+  searchBar.hidden = true;
   $("#overlay").hidden = false;
   $("#cartDrawer").classList.add("is-open");
   $("#cartDrawer").setAttribute("aria-hidden", "false");
@@ -414,11 +426,13 @@ $$(".cat-card").forEach((card) => {
   });
 });
 
-const searchBar = $("#searchBar");
 $("#searchBtn").addEventListener("click", () => {
   const open = searchBar.hidden;
   searchBar.hidden = !open;
-  if (open) $("#searchInput").focus();
+  if (open) {
+    closeMobileMenu();
+    $("#searchInput").focus();
+  }
 });
 $("#searchClose").addEventListener("click", () => {
   searchBar.hidden = true;
@@ -431,21 +445,24 @@ $("#searchInput").addEventListener("input", (e) => {
   filter = "all";
   $$("#filters .chip").forEach((c) => c.classList.toggle("is-on", c.dataset.filter === "all"));
   renderShop();
+  if (query.trim()) {
+    const shop = $("#shop");
+    const r = shop.getBoundingClientRect();
+    if (r.top > innerHeight * 0.65 || r.bottom < 140) {
+      shop.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
 });
 
-const navToggle = $("#navToggle");
-const mobileMenu = $("#mobileMenu");
 navToggle.addEventListener("click", () => {
   const open = mobileMenu.hidden;
   mobileMenu.hidden = !open;
   navToggle.classList.toggle("is-open", open);
   navToggle.setAttribute("aria-expanded", String(open));
+  if (open) searchBar.hidden = true;
 });
 $$("#mobileMenu a").forEach((a) =>
-  a.addEventListener("click", () => {
-    mobileMenu.hidden = true;
-    navToggle.classList.remove("is-open");
-  })
+  a.addEventListener("click", closeMobileMenu)
 );
 
 $("#cartBtn").addEventListener("click", openCart);
@@ -476,6 +493,7 @@ $("#cartBody").addEventListener("click", (e) => {
   const act = e.target.closest("[data-act]");
   if (!act) return;
   const idx = Number(act.parentElement.dataset.idx);
+  if (!cart[idx]) return;
   if (act.dataset.act === "+") cart[idx].qty = Math.min(6, cart[idx].qty + 1);
   else cart[idx].qty = Math.max(1, cart[idx].qty - 1);
   saveCart();
@@ -510,5 +528,7 @@ document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
   if (!$("#checkModal").hidden) closeCheckout();
   else if (!$("#productModal").hidden) closeProduct();
-  else closeCart();
+  else if ($("#cartDrawer").classList.contains("is-open")) closeCart();
+  else if (!searchBar.hidden) searchBar.hidden = true;
+  else closeMobileMenu();
 });
