@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Arjuna Celebrations Hall</title>
+  <meta name="description" content="Admin dashboard for Arjuna Celebrations Hall — bookings, revenue, enquiries, invoices and reports." />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body>
+
+<!-- ═════════ Icon sprite ═════════ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-grid" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18v-2H5V3H3zm5 12h2v3H8v-3zm4-6h2v9h-2V9zm4-4h2v13h-2V5z"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><path d="M20 8h-3V4H3a2 2 0 0 0-2 2v11h2a3 3 0 0 0 6 0h6a3 3 0 0 0 6 0h2v-5l-3-4zM6 18.5A1.5 1.5 0 1 1 7.5 17 1.5 1.5 0 0 1 6 18.5zm12 0A1.5 1.5 0 1 1 19.5 17 1.5 1.5 0 0 1 18 18.5zM19.5 12H17V9.5h1.6l1.9 2.5z"/></symbol>
+    <symbol id="i-invoice" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></symbol>
+    <symbol id="i-report" viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-9 14H7v-6h3v6zm5 0h-3V7h3v10zm4 0h-3v-4h3v4z"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M19.14 12.94a7.07 7.07 0 0 0 0-1.88l2.03-1.58a.5.5 0 0 0 .12-.63l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.3 7.3 0 0 0-1.62-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54c-.58.24-1.12.55-1.62.94l-2.39-.96a.5.5 0 0 0-.6.22L2.71 8.85a.5.5 0 0 0 .12.63l2.03 1.58a7.07 7.07 0 0 0 0 1.88l-2.03 1.58a.5.5 0 0 0-.12.63l1.92 3.32c.13.22.39.3.6.22l2.39-.96c.5.39 1.04.7 1.62.94l.36 2.54c.04.24.25.42.5.42h3.84c.25 0 .46-.18.5-.42l.36-2.54c.58-.24 1.12-.55 1.62-.94l2.39.96c.21.08.47 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.63l-2.03-1.58zM12 15.6A3.6 3.6 0 1 1 15.6 12 3.6 3.6 0 0 1 12 15.6z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2zm6-6V11a6 6 0 0 0-5-5.91V4a1 1 0 1 0-2 0v1.09A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2z"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.93 6h-2.95a15.7 15.7 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.93 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82A15.6 15.6 0 0 1 12 4.04zM4.26 14a8.2 8.2 0 0 1 0-4h3.38a16.5 16.5 0 0 0 0 4H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.99 7.99 0 0 1 5.08 16zm2.95-8H5.08a7.99 7.99 0 0 1 4.33-3.56A15.7 15.7 0 0 0 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82A15.6 15.6 0 0 1 12 19.96zM14.34 14H9.66a14.7 14.7 0 0 1 0-4h4.68a14.7 14.7 0 0 1 0 4zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56zM16.36 14a16.5 16.5 0 0 0 0-4h3.38a8.2 8.2 0 0 1 0 4h-3.38z"/></symbol>
+    <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></symbol>
+    <symbol id="i-check-circle" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8v-2H4V5z"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></symbol>
+    <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0 0 18c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01a1.5 1.5 0 0 1 1.14-2.49H16a5 5 0 0 0 5-5c0-4.42-4.03-8-9-8zm-5.5 9a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-4A1.5 1.5 0 1 1 11 5a1.5 1.5 0 0 1 0 3zm5 0A1.5 1.5 0 1 1 16 5a1.5 1.5 0 0 1 0 3zm3 4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></symbol>
+    <symbol id="i-collapse" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/><path d="M20.41 7.41L19 6l-6 6 6 6 1.41-1.41L15.83 12z"/></symbol>
+    <symbol id="i-rupee" viewBox="0 0 24 24"><path d="M13.66 7H17V5h-3.34A5.5 5.5 0 0 0 8.5 8H7v2h1.3c.05.33.14.65.26.96L7 13v2h2.5a5.5 5.5 0 0 0 5.16-3.6A5.5 5.5 0 0 0 13.66 7zM11.5 12A3.5 3.5 0 0 1 8.5 10h3a3.5 3.5 0 0 1 0 2zM7 16h2v3h2v-3h6v-2H9v-1H7v3z"/></symbol>
+    <symbol id="i-cart" viewBox="0 0 24 24"><path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7.16 14.26l.03-.12.9-1.63h7.45a2 2 0 0 0 1.74-1.01l3.58-6.49L19.13 4h-.01l-1.1 2-2.76 5H8.53l-.13-.27L6.16 6l-.95-2-.94-2H1v2h2l3.6 7.59-1.35 2.44A2 2 0 0 0 7 17h12v-2H7.42a.25.25 0 0 1-.26-.24z"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm.5 5H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></symbol>
+    <symbol id="i-trend" viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2v8h6l-8 12v-8H5l8-12z"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.32.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm0 16H5V9h14v10z"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12.3 2a9 9 0 0 0-.3 18 9 9 0 0 0 7.6-13.7A9.6 9.6 0 0 1 12.3 2z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0-5v2.5M12 19.5V22M4.22 4.22l1.77 1.77M18.01 18.01l1.77 1.77M2 12h2.5M19.5 12H22M4.22 19.78l1.77-1.77M18.01 5.99l1.77-1.77" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><path d="M18 8h-1V6a5 5 0 0 0-10 0v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2zM9 6a3 3 0 0 1 6 0v2H9V6zm3 12a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><path d="M12.65 10A6 6 0 1 0 7 16a5.98 5.98 0 0 0 5.65-4H13l2 2 1.5-1.5L18 14l2-2-2-2-4.35-4.35A6 6 0 0 0 12.65 10zM7 18a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></symbol>
+    <symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-4l-3 8-4-16-3 8H2v-2h3.5l3.5-9 4 16 3-8H22z"/></symbol>
+    <symbol id="i-sort" viewBox="0 0 24 24"><path d="M12 5.83L15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></symbol>
+    <symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M17.65 6.35A8 8 0 1 0 19.73 14h-2.08A6 6 0 1 1 12 6a5.9 5.9 0 0 1 4.22 1.78L13 11h7V4l-2.35 2.35z"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></symbol>
+  </defs>
+</svg>
+
+<!-- ═════════ Login gate ═════════ -->
+<div class="login-gate" id="loginGate">
+  <aside class="login-aside">
+    <a class="login-brand" href="index.html"><img src="images/logo-full-light.svg" alt="Arjuna Celebrations Hall" width="176" height="42" /></a>
+
+    <div class="login-tag">
+      <h1>Every booking, enquiry and rupee — in one place.</h1>
+      <p>The operations console for Arjuna Celebrations Hall: live availability, guest enquiries, invoices and venue performance.</p>
+      <div class="login-proof">
+        <div><b>₹4.85L</b><small>Revenue MTD</small></div>
+        <div><b>1,280</b><small>Bookings YTD</small></div>
+        <div><b>4.3★</b><small>Guest rating</small></div>
+      </div>
+    </div>
+
+    <p class="login-foot">© <span id="loginYear">2026</span> Arjuna Celebrations Hall · <a href="index.html">Back to website</a></p>
+  </aside>
+
+  <main class="login-panel">
+    <div class="login-card">
+      <a class="login-brand" href="index.html" style="display:inline-block;margin-bottom:26px">
+        <img src="images/logo-full.svg" alt="Arjuna Celebrations Hall" style="height:40px" />
+      </a>
+      <h2>Sign in to your dashboard</h2>
+      <p>Use the demo credentials below — no real data is stored.</p>
+
+      <form class="login-form" id="loginForm" novalidate>
+        <div class="login-error" id="loginError" role="alert">
+          <svg class="ic"><use href="#i-alert"/></svg>
+          <span>That email and password don't match. Try the demo login.</span>
+        </div>
+
+        <div class="login-field">
+          <label for="loginEmail">Work email</label>
+          <div class="input-wrap">
+            <svg class="ic"><use href="#i-mail"/></svg>
+            <input type="email" id="loginEmail" name="email" value="admin@arjunahall.in" autocomplete="username" required />
+          </div>
+        </div>
+
+        <div class="login-field">
+          <label for="loginPassword">Password</label>
+          <div class="input-wrap">
+            <svg class="ic"><use href="#i-lock"/></svg>
+            <input type="password" id="loginPassword" name="password" value="demo1234" autocomplete="current-password" required />
+          </div>
+        </div>
+
+        <div class="login-field">
+          <label for="loginRole">Sign in as</label>
+          <select id="loginRole">
+            <option value="admin">Super Admin — full access</option>
+            <option value="editor">Manager — bookings &amp; invoices</option>
+            <option value="viewer">Staff — read only</option>
+          </select>
+        </div>
+
+        <div class="login-row">
+          <label><input type="checkbox" id="rememberMe" checked /> Keep me signed in</label>
+          <a href="#" id="forgotLink">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;height:46px">
+          Sign in
+          <svg class="ic"><use href="#i-chevron-right"/></svg>
+        </button>
+      </form>
+
+      <div class="login-hint">
+        <b>Demo access:</b> <code>admin@arjunahall.in</code> / <code>demo1234</code>
+        <br />Or <button type="button" id="demoFill">fill demo credentials</button> and press Sign in.
+      </div>
+
+      <a class="login-back" href="index.html">
+        <svg class="ic" style="width:15px;height:15px"><use href="#i-chevron-left"/></svg>
+        Back to website
+      </a>
+    </div>
+  </main>
+</div>
+
+<!-- ═════════ App shell ═════════ -->
+<div class="app" id="app" hidden>
+  <div class="sidebar-scrim" id="sidebarScrim"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar" aria-label="Dashboard navigation">
+    <div class="sidebar-head">
+      <a class="sidebar-brand" href="index.html" aria-label="Arjuna Celebrations Hall — website">
+        <img class="sb-full" src="images/logo-full-light.svg" alt="Arjuna Celebrations Hall" />
+        <img class="sb-mini" src="images/logo-mark.svg" alt="Arjuna" />
+      </a>
+    </div>
+
+    <div class="sidebar-scroll">
+      <div class="nav-group">
+        <p>Core</p>
+        <button class="nav-item active" data-view="overview">
+          <svg class="ic"><use href="#i-grid"/></svg><span>Overview</span>
+        </button>
+        <button class="nav-item" data-view="revenue">
+          <svg class="ic"><use href="#i-chart"/></svg><span>Sales &amp; Revenue</span>
+        </button>
+        <button class="nav-item" data-view="users">
+          <svg class="ic"><use href="#i-users"/></svg><span>Customers</span>
+          <span class="nav-badge soft" id="badgeCustomers">0</span>
+        </button>
+      </div>
+
+      <div class="nav-group">
+        <p>Operations</p>
+        <button class="nav-item" data-view="orders">
+          <svg class="ic"><use href="#i-box"/></svg><span>Bookings</span>
+          <span class="nav-badge" id="badgeOrders">12</span>
+        </button>
+        <button class="nav-item" data-view="invoices">
+          <svg class="ic"><use href="#i-invoice"/></svg><span>Invoices &amp; Billing</span>
+        </button>
+        <button class="nav-item" data-view="reports">
+          <svg class="ic"><use href="#i-report"/></svg><span>Reports &amp; Export</span>
+        </button>
+      </div>
+
+      <div class="nav-group">
+        <p>Administration</p>
+        <button class="nav-item" data-view="settings">
+          <svg class="ic"><use href="#i-settings"/></svg><span>System Settings</span>
+        </button>
+        <a class="nav-item" href="index.html">
+          <svg class="ic"><use href="#i-home"/></svg><span>Public website</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="sys-status"><i></i>System online <span>v2.4</span></div>
+      <button class="collapse-btn" id="collapseBtn" aria-label="Collapse sidebar">
+        <svg class="ic"><use href="#i-collapse"/></svg><span>Collapse</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn hamburger" id="burger" aria-label="Open navigation" aria-expanded="false">
+        <svg class="ic"><use href="#i-menu"/></svg>
+      </button>
+
+      <div class="topbar-title">
+        <h1 id="topbarTitle">Overview</h1>
+        <p id="topbarSub">Welcome back, Adil — here's how the hall is doing.</p>
+      </div>
+
+      <div class="topbar-search" role="search">
+        <svg class="ic"><use href="#i-search"/></svg>
+        <label class="sr-only" for="globalSearch">Search analytics, customers, bookings…</label>
+        <input type="search" id="globalSearch" placeholder="Search analytics, customers, bookings…" autocomplete="off" aria-controls="searchPop" />
+        <kbd>⌘K</kbd>
+        <div class="search-pop" id="searchPop" hidden></div>
+      </div>
+
+      <div class="topbar-actions">
+        <div class="dropdown">
+          <button class="icon-btn" id="notifBtn" aria-label="Notifications" aria-expanded="false">
+            <svg class="ic"><use href="#i-bell"/></svg>
+            <span class="bell-dot" id="notifCount">3</span>
+          </button>
+          <div class="dropdown-panel wide" id="notifPanel" role="dialog" aria-label="Notifications">
+            <div class="dp-head">
+              <b>Notifications</b>
+              <button type="button" id="markAllRead">Mark all read</button>
+            </div>
+            <div class="notif-list" id="notifList"></div>
+          </div>
+        </div>
+
+        <button class="lang-btn" id="langBtn" title="Language" aria-label="Change language">
+          <svg class="ic"><use href="#i-globe"/></svg><span>EN</span>
+        </button>
+
+        <div class="dropdown">
+          <button class="user-menu-btn" id="userBtn" aria-label="Account menu" aria-expanded="false">
+            <span class="avatar" id="userAvatar">AS</span>
+            <span class="um-txt"><b id="userName">Adil Sayyad</b><small id="userRole">Super Admin</small></span>
+            <svg class="ic"><use href="#i-chevron-down"/></svg>
+          </button>
+          <div class="dropdown-panel" id="userPanel" role="menu">
+            <div class="dp-user">
+              <span class="avatar" style="width:38px;height:38px">AS</span>
+              <div><b id="dpName">Adil Sayyad</b><small id="dpEmail">admin@arjunahall.in</small></div>
+            </div>
+            <div class="dp-sep"></div>
+            <button class="dp-item" data-goto="settings"><svg class="ic"><use href="#i-user"/></svg>Edit profile</button>
+            <button class="dp-item" data-goto="settings" data-tab="security"><svg class="ic"><use href="#i-shield"/></svg>Security &amp; 2FA</button>
+            <button class="dp-item" data-goto="settings" data-tab="appearance"><svg class="ic"><use href="#i-palette"/></svg>Appearance</button>
+            <button class="dp-item" id="themeQuick"><svg class="ic"><use href="#i-moon"/></svg>Switch theme</button>
+            <div class="dp-sep"></div>
+            <button class="dp-item danger" id="logoutBtn"><svg class="ic"><use href="#i-logout"/></svg>Log out</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- ═══ OVERVIEW ═══ -->
+      <section class="view active" id="view-overview" aria-labelledby="h-overview">
+        <div class="page-head">
+          <div>
+            <h2 id="h-overview">Overview</h2>
+            <p id="overviewGreeting">Saturday, 8 November 2026 · hall status: open till 7:30 PM</p>
+          </div>
+          <div class="page-actions">
+            <div class="segmented" id="rangeFilter" role="group" aria-label="Date range">
+              <button data-range="7">7 days</button>
+              <button data-range="30" class="active">30 days</button>
+              <button data-range="365">1 year</button>
+            </div>
+            <button class="btn btn-ghost" id="refreshBtn"><svg class="ic"><use href="#i-refresh"/></svg>Refresh</button>
+            <button class="btn btn-primary" data-action="new-booking"><svg class="ic"><use href="#i-plus"/></svg>New booking</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid" id="kpiGrid"></div>
+
+        <div class="grid-70-30">
+          <section class="card">
+            <div class="card-head">
+              <div>
+                <h3 id="chartTitle">Monthly growth analytics</h3>
+                <p id="chartSub">Bookings vs enquiries · Jan – Dec 2026</p>
+              </div>
+              <div class="card-head-actions">
+                <div class="legend">
+                  <span><i></i> Bookings</span>
+                  <span><i class="emerald"></i> Enquiries</span>
+                </div>
+                <button class="btn btn-ghost btn-sm" id="chartExport"><svg class="ic"><use href="#i-download"/></svg>CSV</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-wrap" id="growthChartWrap">
+                <div class="chart-tip" id="growthTip"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-head">
+              <div><h3>Event mix</h3><p>Share of bookings this year</p></div>
+            </div>
+            <div class="card-body">
+              <div class="donut-wrap">
+                <div class="donut" id="donutWrap">
+                  <svg viewBox="0 0 120 120" width="168" height="168" aria-label="Event mix donut chart">
+                    <circle cx="60" cy="60" r="48" fill="none" stroke="var(--line)" stroke-width="18" />
+                    <g id="donutSegs"></g>
+                  </svg>
+                  <div class="donut-center"><div><b id="donutTotal">0</b><small>bookings</small></div></div>
+                </div>
+                <div class="donut-legend" id="donutLegend"></div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="grid-main-side">
+          <section class="card">
+            <div class="card-head">
+              <div><h3>Recent bookings</h3><p>Latest enquiries and confirmed events</p></div>
+              <div class="card-head-actions">
+                <button class="btn btn-ghost btn-sm" data-goto="orders">View all<svg class="ic"><use href="#i-chevron-right"/></svg></button>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table class="data" id="recentTable">
+                <thead>
+                  <tr>
+                    <th>Booking</th><th>Customer</th><th>Date</th><th>Amount</th><th>Status</th><th>Action</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="table-foot">
+              <span>Showing 5 most recent of <b id="recentTotal">0</b> bookings</span>
+              <button class="btn btn-ghost btn-sm" data-goto="orders">Open bookings</button>
+            </div>
+          </section>
+
+          <div style="display:grid;gap:16px">
+            <section class="card">
+              <div class="card-head"><div><h3>Quick actions</h3><p>One click, no digging</p></div></div>
+              <div class="card-body">
+                <div class="quick-actions">
+                  <button data-action="new-booking"><span class="qa-ic"><svg class="ic"><use href="#i-calendar"/></svg></span>Add a booking<svg class="ic qa-go"><use href="#i-chevron-right"/></svg></button>
+                  <button data-action="new-invoice"><span class="qa-ic"><svg class="ic"><use href="#i-invoice"/></svg></span>Create an invoice<svg class="ic qa-go"><use href="#i-chevron-right"/></svg></button>
+                  <button data-action="export-report"><span class="qa-ic"><svg class="ic"><use href="#i-download"/></svg></span>Generate a report<svg class="ic qa-go"><use href="#i-chevron-right"/></svg></button>
+                  <button data-goto="settings" data-tab="team"><span class="qa-ic"><svg class="ic"><use href="#i-users"/></svg></span>Invite a team member<svg class="ic qa-go"><use href="#i-chevron-right"/></svg></button>
+                </div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-head"><div><h3>Activity feed</h3><p>Live team log</p></div></div>
+              <div class="card-body">
+                <div class="activity" id="activityFeed"></div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ REVENUE ═══ -->
+      <section class="view" id="view-revenue" aria-labelledby="h-revenue">
+        <div class="page-head">
+          <div>
+            <h2 id="h-revenue">Sales &amp; revenue</h2>
+            <p>Where the money comes from — packages, sessions and the months that carry the year.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-ghost" data-action="export-report"><svg class="ic"><use href="#i-download"/></svg>Export</button>
+            <button class="btn btn-primary" data-action="new-invoice"><svg class="ic"><use href="#i-invoice"/></svg>New invoice</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid" id="revenueKpis"></div>
+
+        <div class="grid-70-30">
+          <section class="card">
+            <div class="card-head">
+              <div><h3>Revenue trend</h3><p>Collected vs booked value, last 12 months</p></div>
+              <div class="legend"><span><i></i> Collected</span><span><i class="amber"></i> Booked</span></div>
+            </div>
+            <div class="card-body">
+              <div class="chart-wrap" id="revenueChartWrap"><div class="chart-tip" id="revenueTip"></div></div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-head"><div><h3>Revenue by package</h3><p>Share of total value</p></div></div>
+            <div class="card-body">
+              <div class="mini-list" id="packageBreakdown"></div>
+            </div>
+          </section>
+        </div>
+
+        <div class="grid-2">
+          <section class="card">
+            <div class="card-head"><div><h3>Revenue by session</h3><p>Morning vs evening vs full-day</p></div></div>
+            <div class="card-body"><div class="chart-wrap" id="sessionChartWrap"><div class="chart-tip" id="sessionTip"></div></div></div>
+          </section>
+          <section class="card">
+            <div class="card-head"><div><h3>Month-on-month</h3><p>Change against the previous month</p></div></div>
+            <div class="card-body"><div class="mini-list" id="momList"></div></div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ═══ CUSTOMERS ═══ -->
+      <section class="view" id="view-users" aria-labelledby="h-users">
+        <div class="page-head">
+          <div>
+            <h2 id="h-users">Customers</h2>
+            <p>Every family and company that has enquired or booked with us.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-ghost" data-action="export-csv" data-export="customers"><svg class="ic"><use href="#i-download"/></svg>Export CSV</button>
+            <button class="btn btn-primary" data-action="add-customer"><svg class="ic"><use href="#i-plus"/></svg>Add customer</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid" id="customerKpis"></div>
+
+        <section class="card">
+          <div class="table-toolbar">
+            <div class="table-search">
+              <svg class="ic"><use href="#i-search"/></svg>
+              <label class="sr-only" for="customerSearch">Search customers</label>
+              <input type="search" id="customerSearch" placeholder="Search name, phone or city…" />
+            </div>
+            <div class="chip-row" id="customerChips">
+              <button class="chip active" data-status="all">All</button>
+              <button class="chip" data-status="confirmed">Confirmed</button>
+              <button class="chip" data-status="pending">Pending</button>
+              <button class="chip" data-status="cancelled">Cancelled</button>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:6px">
+              <button class="btn btn-ghost btn-sm" id="customersSort"><svg class="ic"><use href="#i-sort"/></svg>Sort by spend</button>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="data" id="customersTable">
+              <thead>
+                <tr>
+                  <th>Customer</th><th class="sortable" data-sort="events">Events</th><th class="sortable" data-sort="spend">Total spend</th>
+                  <th>Last booking</th><th>Status</th><th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="table-foot">
+            <span id="customersCount">—</span>
+            <div class="pagination" id="customersPager"></div>
+          </div>
+        </section>
+      </section>
+
+      <!-- ═══ BOOKINGS ═══ -->
+      <section class="view" id="view-orders" aria-labelledby="h-orders">
+        <div class="page-head">
+          <div>
+            <h2 id="h-orders">Bookings</h2>
+            <p>Requests, holds and confirmed events across both halls.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-ghost" data-action="export-csv" data-export="bookings"><svg class="ic"><use href="#i-download"/></svg>Export</button>
+            <button class="btn btn-primary" data-action="new-booking"><svg class="ic"><use href="#i-plus"/></svg>New booking</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid" id="bookingKpis"></div>
+
+        <section class="card">
+          <div class="table-toolbar">
+            <div class="table-search">
+              <svg class="ic"><use href="#i-search"/></svg>
+              <label class="sr-only" for="bookingSearch">Search bookings</label>
+              <input type="search" id="bookingSearch" placeholder="Search ID, customer or occasion…" />
+            </div>
+            <div class="chip-row" id="bookingChips">
+              <button class="chip active" data-status="all">All</button>
+              <button class="chip" data-status="confirmed">Confirmed</button>
+              <button class="chip" data-status="pending">Pending</button>
+              <button class="chip" data-status="completed">Completed</button>
+              <button class="chip" data-status="cancelled">Cancelled</button>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="data" id="bookingsTable">
+              <thead>
+                <tr>
+                  <th class="sortable" data-sort="id">ID</th>
+                  <th class="sortable" data-sort="customer">Customer</th>
+                  <th class="sortable" data-sort="date">Event date</th>
+                  <th>Occasion</th><th>Guests</th>
+                  <th class="sortable" data-sort="amount">Amount</th>
+                  <th>Status</th><th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="table-foot">
+            <span id="bookingsCount">—</span>
+            <div class="pagination" id="bookingsPager"></div>
+          </div>
+        </section>
+      </section>
+
+      <!-- ═══ INVOICES ═══ -->
+      <section class="view" id="view-invoices" aria-labelledby="h-invoices">
+        <div class="page-head">
+          <div>
+            <h2 id="h-invoices">Invoices &amp; billing</h2>
+            <p>Advances, balances and payment status for every confirmed event.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-ghost" data-action="export-csv" data-export="invoices"><svg class="ic"><use href="#i-download"/></svg>Export</button>
+            <button class="btn btn-primary" data-action="new-invoice"><svg class="ic"><use href="#i-plus"/></svg>New invoice</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid" id="invoiceKpis"></div>
+
+        <section class="card">
+          <div class="table-toolbar">
+            <div class="table-search">
+              <svg class="ic"><use href="#i-search"/></svg>
+              <label class="sr-only" for="invoiceSearch">Search invoices</label>
+              <input type="search" id="invoiceSearch" placeholder="Search invoice # or customer…" />
+            </div>
+            <div class="chip-row">
+              <button class="chip active" data-status="all" data-target="invoices">All</button>
+              <button class="chip" data-status="paid" data-target="invoices">Paid</button>
+              <button class="chip" data-status="pending" data-target="invoices">Pending</button>
+              <button class="chip" data-status="failed" data-target="invoices">Overdue</button>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="data" id="invoicesTable">
+              <thead>
+                <tr><th>Invoice</th><th>Customer</th><th>Issued</th><th>Due</th><th>Amount</th><th>Status</th><th>Actions</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="table-foot">
+            <span id="invoicesCount">—</span>
+            <div class="pagination" id="invoicesPager"></div>
+          </div>
+        </section>
+      </section>
+
+      <!-- ═══ REPORTS ═══ -->
+      <section class="view" id="view-reports" aria-labelledby="h-reports">
+        <div class="page-head">
+          <div>
+            <h2 id="h-reports">Reports &amp; export</h2>
+            <p>Download the numbers your accountant and your family actually ask for.</p>
+          </div>
+          <div class="page-actions">
+            <div class="segmented" id="reportRange" role="group" aria-label="Report range">
+              <button data-range="30" class="active">This month</button>
+              <button data-range="90">Quarter</button>
+              <button data-range="365">Year</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2" id="reportCards"></div>
+
+        <section class="card">
+          <div class="card-head">
+            <div><h3>Occupancy by month</h3><p>Share of available weekend slots booked</p></div>
+            <button class="btn btn-ghost btn-sm" data-action="export-report"><svg class="ic"><use href="#i-download"/></svg>Export</button>
+          </div>
+          <div class="card-body"><div class="chart-wrap" id="occupancyWrap"><div class="chart-tip" id="occupancyTip"></div></div></div>
+        </section>
+      </section>
+
+      <!-- ═══ SETTINGS ═══ -->
+      <section class="view" id="view-settings" aria-labelledby="h-settings">
+        <div class="page-head">
+          <div>
+            <h2 id="h-settings">System settings</h2>
+            <p>Profile, security, team roles, appearance and notifications.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-ghost" id="resetSettings">Reset</button>
+            <button class="btn btn-primary" id="saveSettings"><svg class="ic"><use href="#i-check"/></svg>Save changes</button>
+          </div>
+        </div>
+
+        <div class="tabs" role="tablist" aria-label="Settings sections">
+          <button class="tab active" data-tab="profile" role="tab">Profile</button>
+          <button class="tab" data-tab="security" role="tab">Security</button>
+          <button class="tab" data-tab="team" role="tab">Team &amp; roles</button>
+          <button class="tab" data-tab="appearance" role="tab">Appearance</button>
+          <button class="tab" data-tab="notifications" role="tab">Notifications</button>
+        </div>
+
+        <div class="tab-panel active" data-panel="profile">
+          <div class="settings-grid">
+            <section class="card">
+              <div class="card-head"><div><h3>Your profile</h3><p>Shown on bookings you create and confirm</p></div></div>
+              <div class="card-body">
+                <div class="form-grid">
+                  <div class="form-row">
+                    <div class="f-field"><label for="setFirstName">First name</label><input id="setFirstName" value="Adil" /></div>
+                    <div class="f-field"><label for="setLastName">Last name</label><input id="setLastName" value="Sayyad" /></div>
+                  </div>
+                  <div class="f-field"><label for="setEmail">Email</label><input type="email" id="setEmail" value="admin@arjunahall.in" /></div>
+                  <div class="f-field"><label for="setPhone">Phone</label><input type="tel" id="setPhone" value="+91 96899 02501" /></div>
+                  <div class="f-field"><label for="setVenue">Primary venue</label>
+                    <select id="setVenue"><option>Arjuna Celebrations Hall — Khamla</option><option>Arjuna Annex — Hall 2</option></select>
+                  </div>
+                  <div class="f-field"><label for="setBio">Signature for confirmations</label>
+                    <textarea id="setBio">Booked with care by the Arjuna team. Call 096899 02501 for anything at all.</textarea>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-head"><div><h3>Workspace</h3><p>Venue-wide defaults</p></div></div>
+              <div class="card-body">
+                <div class="mini-list">
+                  <div class="mini-row"><span class="mini-ic"><svg class="ic"><use href="#i-clock"/></svg></span><div class="grow"><b>Opening hours</b><small>Site visits &amp; office</small></div><span class="val">9:00 – 19:30</span></div>
+                  <div class="mini-row"><span class="mini-ic"><svg class="ic"><use href="#i-users"/></svg></span><div class="grow"><b>Max capacity</b><small>Both halls combined</small></div><span class="val">1,000</span></div>
+                  <div class="mini-row"><span class="mini-ic"><svg class="ic"><use href="#i-rupee"/></svg></span><div class="grow"><b>Advance required</b><small>To hold a date</small></div><span class="val">25%</span></div>
+                  <div class="mini-row"><span class="mini-ic"><svg class="ic"><use href="#i-calendar"/></svg></span><div class="grow"><b>Booking window</b><small>Requests accepted up to</small></div><span class="val">18 months</span></div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="security">
+          <div class="settings-grid">
+            <section class="card">
+              <div class="card-head"><div><h3>Change password</h3><p>Use at least 10 characters, mixed case and a number</p></div></div>
+              <div class="card-body">
+                <div class="form-grid">
+                  <div class="f-field"><label for="curPass">Current password</label><input type="password" id="curPass" value="demo1234" autocomplete="current-password" /></div>
+                  <div class="f-field"><label for="newPass">New password</label><input type="password" id="newPass" placeholder="••••••••••" autocomplete="new-password" /></div>
+                  <div class="f-field"><label for="confPass">Confirm new password</label><input type="password" id="confPass" placeholder="••••••••••" autocomplete="new-password" /></div>
+                  <button class="btn btn-primary" id="changePassBtn" style="justify-self:start">Update password</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-head"><div><h3>Two-factor authentication</h3><p>Protect bookings and payout data</p></div></div>
+              <div class="card-body">
+                <div class="toggle-row">
+                  <div><b>Authenticator app</b><small>Time-based codes from Google Authenticator or Authy</small></div>
+                  <label class="switch"><input type="checkbox" id="tfaApp" /><span></span></label>
+                </div>
+                <div class="toggle-row">
+                  <div><b>SMS backup</b><small>Codes to +91 96899 02501 if the app is unavailable</small></div>
+                  <label class="switch"><input type="checkbox" id="tfaSms" /><span></span></label>
+                </div>
+                <div class="toggle-row">
+                  <div><b>Alert on new device</b><small>Email me whenever a new browser signs in</small></div>
+                  <label class="switch"><input type="checkbox" id="tfaAlerts" checked /><span></span></label>
+                </div>
+              </div>
+            </section>
+
+            <section class="card" style="grid-column:1/-1">
+              <div class="card-head"><div><h3>Active sessions</h3><p>Sign out of devices you no longer use</p></div></div>
+              <div class="card-body">
+                <div class="mini-list">
+                  <div class="mini-row"><span class="mini-ic"><svg class="ic"><use href="#i-lock"/></svg></span><div class="grow"><b>MacBook Pro · Chrome</b><small>Nagpur, IN · current session</small></div><span class="badge active">This device</span></div>
+                  <div class="mini-row"><span class="mini-ic"><svg class="ic"><use href="#i-phone"/></svg></span><div class="grow"><b>iPhone 14 · Safari</b><small>Nagpur, IN · 2 days ago</small></div><button class="btn btn-ghost btn-sm">Revoke</button></div>
+                  <div class="mini-row"><span class="mini-ic"><svg class="ic"><use href="#i-globe"/></svg></span><div class="grow"><b>Windows · Edge</b><small>Pune, IN · 3 weeks ago</small></div><button class="btn btn-ghost btn-sm">Revoke</button></div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="team">
+          <div class="settings-grid">
+            <section class="card">
+              <div class="card-head"><div><h3>Invite a team member</h3><p>They'll get an email with a sign-in link</p></div></div>
+              <div class="card-body">
+                <div class="form-grid">
+                  <div class="f-field"><label for="inviteName">Full name</label><input id="inviteName" placeholder="e.g. Sneha Kulkarni" /></div>
+                  <div class="f-field"><label for="inviteEmail">Email</label><input type="email" id="inviteEmail" placeholder="name@arjunahall.in" /></div>
+                  <div class="f-field"><label>Role</label>
+                    <div class="role-cards">
+                      <label class="role-card"><input type="radio" name="inviteRole" value="admin" /><b>Super Admin</b><small>Everything</small></label>
+                      <label class="role-card"><input type="radio" name="inviteRole" value="editor" checked /><b>Manager</b><small>Bookings, invoices</small></label>
+                      <label class="role-card"><input type="radio" name="inviteRole" value="viewer" /><b>Staff</b><small>Read only</small></label>
+                    </div>
+                  </div>
+                  <button class="btn btn-primary" id="inviteBtn" style="justify-self:start"><svg class="ic"><use href="#i-mail"/></svg>Send invitation</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-head"><div><h3>Team members</h3><p>3 active seats of 5</p></div></div>
+              <div class="card-body">
+                <div class="mini-list" id="teamList"></div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="appearance">
+          <div class="settings-grid">
+            <section class="card">
+              <div class="card-head"><div><h3>Theme</h3><p>Follows your device by default</p></div></div>
+              <div class="card-body">
+                <div class="theme-cards">
+                  <label class="theme-card"><input type="radio" name="themeChoice" value="light" />
+                    <div class="theme-preview"><i class="tp-side"></i><div class="tp-main"><em></em><em></em><em></em></div></div>
+                    <b>Light</b>
+                  </label>
+                  <label class="theme-card dark"><input type="radio" name="themeChoice" value="dark" />
+                    <div class="theme-preview"><i class="tp-side"></i><div class="tp-main"><em></em><em></em><em></em></div></div>
+                    <b>Dark</b>
+                  </label>
+                </div>
+                <div class="toggle-row" style="margin-top:14px">
+                  <div><b>Match system theme</b><small>Switch automatically with your OS</small></div>
+                  <label class="switch"><input type="checkbox" id="matchSystem" /><span></span></label>
+                </div>
+                <div class="toggle-row">
+                  <div><b>Compact tables</b><small>Fit more rows on screen</small></div>
+                  <label class="switch"><input type="checkbox" id="compactRows" /><span></span></label>
+                </div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-head"><div><h3>Sidebar &amp; density</h3><p>How much chrome you want</p></div></div>
+              <div class="card-body">
+                <div class="toggle-row">
+                  <div><b>Collapsed sidebar</b><small>Icon-only rail for wide tables</small></div>
+                  <label class="switch"><input type="checkbox" id="miniSidebar" /><span></span></label>
+                </div>
+                <div class="toggle-row">
+                  <div><b>Show KPI sparklines</b><small>Mini trend line on each metric card</small></div>
+                  <label class="switch"><input type="checkbox" id="showSparks" checked /><span></span></label>
+                </div>
+                <div class="toggle-row">
+                  <div><b>Animate charts</b><small>Respects reduced-motion settings</small></div>
+                  <label class="switch"><input type="checkbox" id="animateCharts" checked /><span></span></label>
+                </div>
+              </div>
+            </section>
+
+            <section class="card danger-zone" style="grid-column:1/-1">
+              <div class="card-head"><div><h3>Danger zone</h3><p>Irreversible actions on this workspace</p></div></div>
+              <div class="card-body">
+                <div class="toggle-row" style="border:0">
+                  <div><b>Reset demo data</b><small>Restore all sample bookings, invoices and customers</small></div>
+                  <button class="btn btn-danger" id="resetDataBtn"><svg class="ic"><use href="#i-refresh"/></svg>Reset demo data</button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="notifications">
+          <div class="settings-grid">
+            <section class="card">
+              <div class="card-head"><div><h3>Email notifications</h3><p>Sent to admin@arjunahall.in</p></div></div>
+              <div class="card-body">
+                <div class="toggle-row"><div><b>New enquiry</b><small>Whenever a booking request arrives from the website</small></div><label class="switch"><input type="checkbox" class="notifPref" checked /><span></span></label></div>
+                <div class="toggle-row"><div><b>Payment received</b><small>On every successful advance or balance payment</small></div><label class="switch"><input type="checkbox" class="notifPref" checked /><span></span></label></div>
+                <div class="toggle-row"><div><b>Invoice overdue</b><small>Daily digest of invoices past their due date</small></div><label class="switch"><input type="checkbox" class="notifPref" checked /><span></span></label></div>
+                <div class="toggle-row"><div><b>Weekly summary</b><small>Sunday nights: revenue, occupancy and enquiries</small></div><label class="switch"><input type="checkbox" class="notifPref" /><span></span></label></div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-head"><div><h3>In-app alerts</h3><p>Bell in the top bar</p></div></div>
+              <div class="card-body">
+                <div class="toggle-row"><div><b>Booking changes</b><small>Cancellations, date moves and guest-count edits</small></div><label class="switch"><input type="checkbox" class="notifPref" checked /><span></span></label></div>
+                <div class="toggle-row"><div><b>Team activity</b><small>When a teammate confirms or edits a booking</small></div><label class="switch"><input type="checkbox" class="notifPref" checked /><span></span></label></div>
+                <div class="toggle-row"><div><b>System updates</b><small>New features and maintenance windows</small></div><label class="switch"><input type="checkbox" class="notifPref" /><span></span></label></div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- Floating action button -->
+<div class="fab-wrap" id="fabWrap" hidden>
+  <button class="fab-main" id="fabMain" aria-label="Quick actions" aria-expanded="false"><svg class="ic"><use href="#i-plus"/></svg></button>
+  <div class="fab-menu">
+    <button data-action="new-booking"><svg class="ic"><use href="#i-calendar"/></svg>New booking</button>
+    <button data-action="new-invoice"><svg class="ic"><use href="#i-invoice"/></svg>New invoice</button>
+    <button data-action="add-customer"><svg class="ic"><use href="#i-user"/></svg>Add customer</button>
+    <button data-action="export-report"><svg class="ic"><use href="#i-download"/></svg>Export report</button>
+  </div>
+</div>
+
+<!-- Scrim -->
+<div class="scrim" id="scrim"></div>
+
+<!-- Detail drawer -->
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" hidden>
+  <div class="drawer-head">
+    <div>
+      <h3 id="drawerTitle">Booking details</h3>
+      <p id="drawerSub">—</p>
+    </div>
+    <button class="modal-close" id="drawerClose" aria-label="Close panel"><svg class="ic"><use href="#i-x"/></svg></button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot" id="drawerFoot"></div>
+</aside>
+
+<!-- Modal -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <h3 id="modalTitle">Confirm</h3>
+        <p id="modalSub">—</p>
+      </div>
+      <button class="modal-close" id="modalClose" aria-label="Close dialog"><svg class="ic"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot" id="modalFoot"></div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
+
+<script src="js/dashboard.js" defer></script>
+</body>
+</html>

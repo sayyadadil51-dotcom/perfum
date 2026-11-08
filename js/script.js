@@ -1,452 +1,613 @@
 /* ═══════════════════════════════════════════════════════════════
-   ARJUNA CELEBRATIONS HALL — interactions
+   ARJUNA CELEBRATIONS HALL — public website interactions
    ═══════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
 
   const $ = (s, c) => (c || document).querySelector(s);
   const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
-  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* Minimal IntersectionObserver fallback (older browsers, embedded webviews) */
+  if (!("IntersectionObserver" in window)) {
+    window.IntersectionObserver = function (cb) {
+      this.observe = function (el) {
+        el.classList.add("in");
+        const d = parseInt(el.dataset.decimals || "0", 10);
+        if (el.dataset.count) {
+          el.textContent = d
+            ? parseFloat(el.dataset.count).toFixed(d)
+            : parseInt(el.dataset.count, 10).toLocaleString("en-IN");
+        }
+      };
+      this.unobserve = function () {};
+      this.disconnect = function () {};
+    };
+  }
+  const phone = "919689902501";
 
   /* ── Footer year ─────────────────────────────────────────── */
-  $("#year").textContent = new Date().getFullYear();
+  const yearEl = $("#year");
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-  /* ── Navbar: scroll state + mobile menu + active link ────── */
-  const navbar = $("#navbar");
-  const onScroll = () => navbar.classList.toggle("scrolled", window.scrollY > 10);
+  /* ── Sticky header + mobile menu ─────────────────────────── */
+  const header = $("#siteHeader");
+  const navToggle = $("#navToggle");
+  const onScroll = () => header.classList.toggle("is-stuck", window.scrollY > 8);
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
-  const navToggle = $("#navToggle");
-  const navLinks = $("#navLinks");
+  const closeMenu = () => {
+    document.body.classList.remove("menu-open");
+    navToggle.setAttribute("aria-expanded", "false");
+    navToggle.setAttribute("aria-label", "Open menu");
+  };
   navToggle.addEventListener("click", () => {
-    const open = navLinks.classList.toggle("open");
+    const open = document.body.classList.toggle("menu-open");
     navToggle.setAttribute("aria-expanded", String(open));
     navToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
   });
-  $$("a", navLinks).forEach((a) =>
-    a.addEventListener("click", () => {
-      navLinks.classList.remove("open");
-      navToggle.setAttribute("aria-expanded", "false");
-    })
-  );
-
-  const sectionIds = ["overview", "gallery", "packages", "reviews", "visit", "faq"];
-  const linkMap = new Map();
-  $$("a", navLinks).forEach((a) => {
-    const id = a.getAttribute("href").slice(1);
-    if (sectionIds.includes(id)) linkMap.set(id, a);
-  });
-  const activeIO = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) {
-          linkMap.forEach((a) => a.classList.remove("active"));
-          const link = linkMap.get(e.target.id);
-          if (link) link.classList.add("active");
-        }
-      });
-    },
-    { rootMargin: "-35% 0px -55% 0px" }
-  );
-  sectionIds.forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) activeIO.observe(el);
+  $$("#navPrimary a").forEach((a) => a.addEventListener("click", closeMenu));
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeMenu();
+      closeSearch();
+    }
   });
 
-  /* ── Reveal on scroll ────────────────────────────────────── */
+  /* ── Scroll reveal ───────────────────────────────────────── */
   const revealIO = new IntersectionObserver(
     (entries, obs) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) {
-          e.target.classList.add("in");
-          obs.unobserve(e.target);
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in");
+          obs.unobserve(entry.target);
         }
       });
     },
-    { threshold: 0.15 }
+    { rootMargin: "0px 0px -8% 0px", threshold: 0.08 }
   );
   $$(".reveal").forEach((el) => revealIO.observe(el));
 
-  /* ── Animated counters ───────────────────────────────────── */
-  function formatNum(n, decimals) {
-    return decimals
-      ? n.toFixed(decimals)
-      : Math.round(n).toLocaleString("en-IN");
-  }
-  function animateCount(el) {
-    const target = parseFloat(el.dataset.count);
-    const decimals = parseInt(el.dataset.decimals || "0", 10);
-    if (prefersReduced) { el.textContent = formatNum(target, decimals); return; }
-    const dur = 1600;
-    const t0 = performance.now();
-    (function tick(t) {
-      const p = Math.min((t - t0) / dur, 1);
-      const eased = 1 - Math.pow(1 - p, 3);
-      el.textContent = formatNum(target * eased, decimals);
-      if (p < 1) requestAnimationFrame(tick);
-    })(t0);
-  }
-  const countIO = new IntersectionObserver(
-    (entries, obs) => {
+  /* ── Active nav link ─────────────────────────────────────── */
+  const navLinks = $$("#navPrimary a");
+  const linkFor = new Map();
+  navLinks.forEach((a) => linkFor.set(a.getAttribute("href").slice(1), a));
+  const sectionIO = new IntersectionObserver(
+    (entries) => {
       entries.forEach((e) => {
-        if (e.isIntersecting) { animateCount(e.target); obs.unobserve(e.target); }
+        if (!e.isIntersecting) return;
+        navLinks.forEach((a) => a.classList.remove("is-active"));
+        const link = linkFor.get(e.target.id);
+        if (link) link.classList.add("is-active");
       });
     },
-    { threshold: 0.6 }
+    { rootMargin: "-45% 0px -50% 0px" }
   );
-  $$("[data-count]").forEach((el) => countIO.observe(el));
+  ["home", "features", "services", "pricing", "gallery", "visit"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) sectionIO.observe(el);
+  });
 
-  /* ── Open / closed live status ───────────────────────────── */
-  (function openStatus() {
-    const chip = $("#openStatus");
-    if (!chip) return;
-    const [oh, om] = chip.dataset.open.split(":").map(Number);
-    const [ch, cm] = chip.dataset.close.split(":").map(Number);
-    const now = new Date();
-    const mins = now.getHours() * 60 + now.getMinutes();
-    const open = mins >= oh * 60 + om && mins < ch * 60 + cm;
-    const fmt = (h, m) => {
-      const ampm = h >= 12 ? "PM" : "AM";
-      const h12 = ((h + 11) % 12) + 1;
-      return `${h12}:${String(m).padStart(2, "0")} ${ampm}`;
-    };
-    chip.textContent = open
-      ? `Open now · closes ${fmt(ch, cm)}`
-      : `Closed · opens ${fmt(oh, om)}`;
-    if (!open) chip.classList.add("closed");
-  })();
+  /* ── Animated stat counters ──────────────────────────────── */
+  const counters = $$("[data-count]");
+  const countIO = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        const target = parseFloat(el.dataset.count);
+        const decimals = parseInt(el.dataset.decimals || "0", 10);
+        const duration = reduceMotion ? 0 : 1300;
+        const start = performance.now();
+        const tick = (now) => {
+          const p = duration === 0 ? 1 : Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - p, 3);
+          const val = target * eased;
+          el.textContent = decimals
+            ? val.toFixed(decimals)
+            : Math.round(val).toLocaleString("en-IN");
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+        obs.unobserve(el);
+      });
+    },
+    { threshold: 0.4 }
+  );
+  counters.forEach((c) => countIO.observe(c));
 
-  /* ── Popular times chart ─────────────────────────────────── */
-  (function popularTimes() {
-    const chart = $("#ptChart");
-    if (!chart) return;
-    // Busyness % for hours 9 AM → 9 PM (typical for a celebration hall)
-    const values = [12, 18, 30, 52, 68, 58, 34, 40, 55, 78, 90, 52, 18];
-    const now = new Date();
-    const currentHour = now.getHours();
+  /* ── Global search ───────────────────────────────────────── */
+  const searchInput = $("#siteSearch");
+  const searchPanel = $("#searchResults");
+  const SEARCH_INDEX = [
+    { title: "Check dates & book", desc: "Availability calendar and booking request", href: "#book", tag: "Booking" },
+    { title: "The Venue package — ₹75,000", desc: "Hall, stage, tables, parking, power backup", href: "#pricing", tag: "Pricing" },
+    { title: "Venue + Catering — ₹649/plate", desc: "Multi-cuisine buffet, live counters, staff", href: "#pricing", tag: "Pricing" },
+    { title: "Compare what's included", desc: "The Venue vs Venue + Catering vs Full Celebration", href: "#pricing", tag: "Pricing" },
+    { title: "Wedding & reception", desc: "Mandap, stage, baraat entry, up to 1,000 guests", href: "#services", tag: "Services" },
+    { title: "Sangeet & haldi", desc: "Sound, light, dance floor, lawn-side haldi", href: "#services", tag: "Services" },
+    { title: "Corporate & social events", desc: "Conferences, annual days, milestone parties", href: "#services", tag: "Services" },
+    { title: "Photo gallery", desc: "Real setups from past weddings and receptions", href: "#gallery", tag: "Gallery" },
+    { title: "Visit us & directions", desc: "Mata Mandir Main Rd, Khamla, Nagpur 440025", href: "#visit", tag: "Contact" },
+    { title: "Customer reviews", desc: "4.3★ from 3,553 Google reviews", href: "#reviews", tag: "Reviews" },
+    { title: "FAQ & cancellation policy", desc: "Timings, catering rules, advances, cancellations", href: "#faq", tag: "Help" },
+    { title: "Admin dashboard", desc: "Bookings, revenue, enquiries and reports", href: "dashboard.html", tag: "Login" }
+  ];
 
-    $("#ptDay").textContent = "· " +
-      now.toLocaleDateString("en-IN", { weekday: "long" }) + "s";
+  function closeSearch() {
+    if (!searchPanel) return;
+    searchPanel.hidden = true;
+    searchInput.setAttribute("aria-expanded", "false");
+  }
 
-    values.forEach((v, i) => {
-      const bar = document.createElement("div");
-      bar.className = "pt-bar";
-      bar.style.height = Math.max(v, 6) + "%";
-      bar.dataset.hour = 9 + i;
-      if (9 + i === currentHour) bar.classList.add("live");
-      chart.appendChild(bar);
-    });
-
-    // Live chip: busyness right now
-    const liveChip = $("#ptLive");
-    const idx = currentHour - 9;
-    if (idx >= 0 && idx < values.length) {
-      const v = values[idx];
-      const label = v < 40 ? "Live · Not too busy" : v < 70 ? "Live · A bit busy" : "Live · Busy";
-      liveChip.innerHTML = "<i></i>" + label;
-    } else {
-      liveChip.classList.add("closed");
-      liveChip.innerHTML = "<i></i>Live · Closed now";
+  function renderSearch(q) {
+    const query = q.trim().toLowerCase();
+    if (!query) {
+      searchPanel.hidden = true;
+      searchInput.setAttribute("aria-expanded", "false");
+      return;
     }
+    const hits = SEARCH_INDEX.filter(
+      (item) =>
+        item.title.toLowerCase().includes(query) ||
+        item.desc.toLowerCase().includes(query) ||
+        item.tag.toLowerCase().includes(query)
+    ).slice(0, 6);
 
-    const ptIO = new IntersectionObserver(
-      (entries, obs) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) { chart.classList.add("in"); obs.unobserve(chart); }
-        });
-      },
-      { threshold: 0.5 }
-    );
-    ptIO.observe(chart);
-  })();
+    searchPanel.innerHTML =
+      `<p class="sr-label">${hits.length ? "Results" : "No results"}</p>` +
+      (hits.length
+        ? hits
+            .map(
+              (h) =>
+                `<a href="${h.href}" role="option"><span><b>${h.title}</b><span>${h.desc}</span></span></a>`
+            )
+            .join("")
+        : `<p class="sr-empty">Nothing matched “${q.trim()}”. Try “pricing”, “parking” or “sangeet”.</p>`);
+    searchPanel.hidden = false;
+    searchInput.setAttribute("aria-expanded", "true");
+    $$("a", searchPanel).forEach((a) => a.addEventListener("click", () => { closeSearch(); searchInput.value = ""; }));
+  }
 
-  /* ── Availability calendar ──────────────────────────────── */
-  const MONTHS = ["January","February","March","April","May","June",
-    "July","August","September","October","November","December"];
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => renderSearch(e.target.value));
+    searchInput.addEventListener("focus", (e) => { if (e.target.value.trim()) renderSearch(e.target.value); });
+    searchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") { closeSearch(); searchInput.blur(); }
+      if (e.key === "Enter") {
+        const first = $("a", searchPanel);
+        if (first) { e.preventDefault(); first.click(); }
+      }
+    });
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".header-search")) closeSearch();
+    });
+  }
 
-  const calState = {
-    y: today.getFullYear(),
-    m: today.getMonth(),
-    selected: null,
-  };
-  // Navigable window: current month → +4 months
-  const minKey = today.getFullYear() * 12 + today.getMonth();
-  const maxKey = minKey + 4;
-
+  /* ── Availability calendar ───────────────────────────────── */
   const calDays = $("#calDays");
   const calTitle = $("#calTitle");
+  const calHint = $("#calHint");
   const calPrev = $("#calPrev");
   const calNext = $("#calNext");
-  const dateInput = $("#date");
+  const dateInput = $("#eventDate");
 
-  const toKey = (y, m) => y * 12 + m;
+  const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   const iso = (d) =>
-    d.getFullYear() + "-" +
-    String(d.getMonth() + 1).padStart(2, "0") + "-" +
-    String(d.getDate()).padStart(2, "0");
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-  // Deterministic "booked" pattern (~30% of dates)
-  const isBooked = (y, m, d) => (d * 31 + (m + 1) * 17 + y) % 10 < 3;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const state = { view: new Date(today.getFullYear(), today.getMonth(), 1), selected: null };
+
+  // Deterministic "already booked" pattern so the demo is stable across reloads.
+  function isBooked(date) {
+    const key = date.getFullYear() * 372 + (date.getMonth() + 1) * 31 + date.getDate();
+    if (date.getDay() === 6) return key % 5 < 3; // most Saturdays taken
+    if (date.getDay() === 0) return key % 7 < 2;
+    return key % 11 === 0;
+  }
 
   function renderCalendar() {
-    const { y, m } = calState;
+    const y = state.view.getFullYear();
+    const m = state.view.getMonth();
     calTitle.textContent = `${MONTHS[m]} ${y}`;
-    calPrev.disabled = toKey(y, m) <= minKey;
-    calNext.disabled = toKey(y, m) >= maxKey;
-
     calDays.innerHTML = "";
-    const startDow = new Date(y, m, 1).getDay();
+
+    const first = new Date(y, m, 1);
+    const startOffset = (first.getDay() + 6) % 7; // Monday-first grid
     const daysInMonth = new Date(y, m + 1, 0).getDate();
+
+    for (let i = 0; i < startOffset; i++) {
+      const empty = document.createElement("span");
+      empty.className = "cal-day empty";
+      calDays.appendChild(empty);
+    }
+
     const todayIso = iso(today);
-
-    for (let i = 0; i < startDow; i++) {
-      const b = document.createElement("div");
-      b.className = "cal-day blank";
-      calDays.appendChild(b);
-    }
     for (let d = 1; d <= daysInMonth; d++) {
-      const cell = document.createElement("button");
-      cell.type = "button";
-      cell.className = "cal-day";
-      cell.textContent = d;
-      cell.setAttribute("aria-label", `${d} ${MONTHS[m]} ${y}`);
-
       const date = new Date(y, m, d);
-      const dIso = iso(date);
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "cal-day";
+      btn.textContent = String(d);
+      btn.setAttribute("role", "gridcell");
 
-      if (dIso < todayIso) {
-        cell.classList.add("disabled", "past");
-        cell.disabled = true;
-      } else if (isBooked(y, m, d)) {
-        cell.classList.add("disabled", "booked");
-        cell.disabled = true;
-        cell.setAttribute("aria-label", cell.getAttribute("aria-label") + " — already booked");
+      const thisIso = iso(date);
+      const past = date < today;
+      const booked = !past && isBooked(date);
+
+      if (past) btn.classList.add("disabled");
+      else if (booked) btn.classList.add("booked", "disabled");
+      if (thisIso === todayIso) btn.classList.add("today");
+      if (state.selected === thisIso) btn.classList.add("selected");
+
+      if (past) {
+        btn.setAttribute("aria-disabled", "true");
+        btn.setAttribute("aria-label", `${d} ${MONTHS[m]} — unavailable`);
+      } else if (booked) {
+        btn.setAttribute("aria-disabled", "true");
+        btn.setAttribute("aria-label", `${d} ${MONTHS[m]} — already booked`);
       } else {
-        if (dIso === todayIso) cell.classList.add("today");
-        if (calState.selected && dIso === iso(calState.selected)) cell.classList.add("selected");
-        cell.addEventListener("click", () => {
-          calState.selected = date;
-          dateInput.value = dIso;
-          clearError(dateInput);
-          renderCalendar();
-        });
+        btn.setAttribute("aria-label", `${d} ${MONTHS[m]} — available, select date`);
+        btn.addEventListener("click", () => selectDate(thisIso));
       }
-      calDays.appendChild(cell);
+      calDays.appendChild(btn);
     }
+
+    // Don't let people navigate before the current month.
+    const isCurrentMonth = y === today.getFullYear() && m === today.getMonth();
+    calPrev.disabled = isCurrentMonth;
+    calPrev.style.opacity = isCurrentMonth ? ".35" : "1";
+    calPrev.style.cursor = isCurrentMonth ? "not-allowed" : "pointer";
   }
 
-  calPrev.addEventListener("click", () => {
-    calState.m--;
-    if (calState.m < 0) { calState.m = 11; calState.y--; }
+  function selectDate(thisIso) {
+    state.selected = thisIso;
+    const [yy, mm, dd] = thisIso.split("-").map(Number);
+    const nice = `${dd} ${MONTHS[mm - 1]} ${yy}`;
+    if (dateInput) dateInput.value = thisIso;
+    clearFieldError(dateInput);
+    calHint.innerHTML = `Selected <strong>${nice}</strong> — fill the form to request it.`;
     renderCalendar();
-  });
-  calNext.addEventListener("click", () => {
-    calState.m++;
-    if (calState.m > 11) { calState.m = 0; calState.y++; }
-    renderCalendar();
-  });
-
-  if (dateInput) {
-    dateInput.min = iso(today);
-    dateInput.addEventListener("change", () => {
-      const v = dateInput.value;
-      if (!v) return;
-      const [y, m, d] = v.split("-").map(Number);
-      const date = new Date(y, m - 1, d);
-      if (date < today) { calState.selected = null; return; }
-      if (isBooked(y, m - 1, d)) {
-        showError(dateInput, "That date is already booked — pick another.");
-        calState.selected = null;
-      } else {
-        clearError(dateInput);
-        calState.selected = date;
-      }
-      // Sync calendar view to the chosen month if navigable
-      const key = toKey(y, m - 1);
-      if (key >= minKey && key <= maxKey) { calState.y = y; calState.m = m - 1; }
-      renderCalendar();
-    });
+    document.getElementById("bookingForm")?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
   }
-  renderCalendar();
+
+  if (calDays) {
+    renderCalendar();
+    calPrev.addEventListener("click", () => { state.view.setMonth(state.view.getMonth() - 1); renderCalendar(); });
+    calNext.addEventListener("click", () => { state.view.setMonth(state.view.getMonth() + 1); renderCalendar(); });
+  }
 
   /* ── Booking form ────────────────────────────────────────── */
   const form = $("#bookingForm");
-  const successPanel = $("#formSuccess");
+  const success = $("#formSuccess");
 
-  function fieldOf(input) { return input.closest(".field"); }
-  function showError(input, msg) {
-    const f = fieldOf(input);
-    if (!f) return;
-    f.classList.add("error");
-    const err = f.querySelector(".err");
-    if (err) err.textContent = msg;
+  function setFieldError(input, on) {
+    if (!input) return;
+    const field = input.closest(".field");
+    if (field) field.classList.toggle("error", !!on);
   }
-  function clearError(input) {
-    const f = fieldOf(input);
-    if (!f) return;
-    f.classList.remove("error");
-    const err = f.querySelector(".err");
-    if (err) err.textContent = "";
-  }
+  function clearFieldError(input) { setFieldError(input, false); }
 
-  function normalizePhone(raw) {
-    let p = raw.replace(/[\s\-()]/g, "");
-    if (p.startsWith("+91")) p = p.slice(3);
-    else if (p.startsWith("91") && p.length === 12) p = p.slice(2);
-    return p;
-  }
+  if (form) {
+    form.addEventListener("input", (e) => {
+      if (e.target.closest(".field")) clearFieldError(e.target);
+    });
 
-  function validate() {
-    let ok = true;
-    let firstBad = null;
+    // Keep the calendar and the date input in sync.
+    if (dateInput) {
+      dateInput.addEventListener("change", () => {
+        const v = dateInput.value;
+        if (!v) return;
+        state.selected = v;
+        const d = new Date(v + "T00:00:00");
+        state.view = new Date(d.getFullYear(), d.getMonth(), 1);
+        renderCalendar();
+      });
+    }
 
-    const occasion = $("#occasion");
-    if (!occasion.value) { showError(occasion, "Please choose an occasion."); ok = false; firstBad = firstBad || occasion; }
-    else clearError(occasion);
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const occasion = (data.get("occasion") || "").toString().trim();
+      const date = (data.get("date") || "").toString().trim();
+      const guestsRaw = (data.get("guests") || "").toString().trim();
+      const guests = parseInt(guestsRaw, 10);
+      const name = (data.get("name") || "").toString().trim();
+      const phoneVal = (data.get("phone") || "").toString().replace(/\D/g, "");
+      const email = (data.get("email") || "").toString().trim();
+      const notes = (data.get("notes") || "").toString().trim();
+      const session = (data.get("session") || "Morning").toString();
 
-    const date = $("#date");
-    if (!date.value) { showError(date, "Pick a preferred date."); ok = false; firstBad = firstBad || date; }
-    else if (new Date(date.value + "T00:00") < today) {
-      showError(date, "Date must be today or later."); ok = false; firstBad = firstBad || date;
-    } else clearError(date);
+      const checks = [
+        [$("#occasion"), !!occasion],
+        [$("#eventDate"), !!date && new Date(date + "T00:00:00") >= today],
+        [$("#guests"), !!guests && guests >= 50 && guests <= 1000],
+        [$("#name"), name.length >= 2],
+        [$("#phone"), /^[6-9]\d{9}$/.test(phoneVal)],
+        [$("#email"), !email || /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)]
+      ];
 
-    const guests = $("#guests");
-    const g = parseInt(guests.value, 10);
-    if (!guests.value || isNaN(g)) { showError(guests, "Roughly how many guests?"); ok = false; firstBad = firstBad || guests; }
-    else if (g < 50 || g > 1000) { showError(guests, "We host 50 – 1,000 guests."); ok = false; firstBad = firstBad || guests; }
-    else clearError(guests);
+      let firstInvalid = null;
+      checks.forEach(([input, ok]) => {
+        setFieldError(input, !ok);
+        if (!ok && !firstInvalid) firstInvalid = input;
+      });
+      if (firstInvalid) {
+        firstInvalid.focus({ preventScroll: true });
+        firstInvalid.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+        return;
+      }
 
-    const name = $("#name");
-    if (name.value.trim().length < 2) { showError(name, "Please tell us your name."); ok = false; firstBad = firstBad || name; }
-    else clearError(name);
+      const ref = "ARJ-" + String(Math.floor(1000 + Math.random() * 8999));
+      $("#bookingRef").textContent = ref;
 
-    const phone = $("#phone");
-    const p = normalizePhone(phone.value);
-    if (!/^[6-9]\d{9}$/.test(p)) { showError(phone, "Enter a valid 10-digit mobile number."); ok = false; firstBad = firstBad || phone; }
-    else clearError(phone);
+      const d = new Date(date + "T00:00:00");
+      const prettyDate = `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+      const rows = [
+        ["Occasion", occasion],
+        ["Date", prettyDate],
+        ["Session", session],
+        ["Guests", `${guests.toLocaleString("en-IN")} guests`],
+        ["Name", name],
+        ["Mobile", `+91 ${phoneVal}`]
+      ];
+      if (email) rows.push(["Email", email]);
+      if (notes) rows.push(["Notes", notes]);
 
-    const email = $("#email");
-    if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim())) {
-      showError(email, "That email doesn't look right."); ok = false; firstBad = firstBad || email;
-    } else clearError(email);
+      $("#successSummary").innerHTML = rows
+        .map(([k, v]) => `<div><dt>${k}</dt><dd>${escapeHtml(v)}</dd></div>`)
+        .join("");
 
-    if (!ok && firstBad) firstBad.focus();
-    return ok;
-  }
+      const waText = encodeURIComponent(
+        `Hi Arjuna Celebrations Hall, I've sent a booking request (${ref}).\n` +
+          `Occasion: ${occasion}\nDate: ${prettyDate}\nSession: ${session}\nGuests: ${guests}\nName: ${name}`
+      );
+      $("#waConfirm").href = `https://wa.me/${phone}?text=${waText}`;
 
-  function prettyDate(isoStr) {
-    const d = new Date(isoStr + "T00:00");
-    return d.toLocaleDateString("en-IN", {
-      weekday: "short", day: "numeric", month: "short", year: "numeric",
+      form.hidden = true;
+      success.hidden = false;
+      success.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+    });
+
+    $("#resetForm")?.addEventListener("click", () => {
+      form.reset();
+      state.selected = null;
+      renderCalendar();
+      calHint.textContent = "Pick a date to start your request.";
+      $$(".field", form).forEach((f) => f.classList.remove("error"));
+      success.hidden = true;
+      form.hidden = false;
+      $("#occasion").focus();
     });
   }
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (!validate()) return;
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
 
-    const data = {
-      occasion: $("#occasion").value,
-      date: $("#date").value,
-      session: form.querySelector('input[name="session"]:checked').value,
-      guests: $("#guests").value,
-      name: $("#name").value.trim(),
-      phone: normalizePhone($("#phone").value),
-      email: $("#email").value.trim(),
-      notes: $("#notes").value.trim(),
+  /* ── Newsletter ──────────────────────────────────────────── */
+  const newsletter = $("#newsletterForm");
+  if (newsletter) {
+    newsletter.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = $("#newsletterEmail");
+      const msg = $("#newsletterMsg");
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim())) {
+        msg.style.color = "#fca5a5";
+        msg.textContent = "Please enter a valid email address.";
+        return;
+      }
+      msg.style.color = "#34d399";
+      msg.textContent = "You're on the list — offers and open dates will land in your inbox.";
+      email.value = "";
+    });
+  }
+
+  /* ── Opening status ──────────────────────────────────────── */
+  const openChip = $("#openStatus");
+  if (openChip) {
+    const toMin = (t) => {
+      const [h, m] = t.split(":").map(Number);
+      return h * 60 + m;
     };
-    const ref = "ARJ-" + Math.floor(1000 + Math.random() * 9000);
+    const open = toMin(openChip.dataset.open);
+    const close = toMin(openChip.dataset.close);
+    const now = new Date();
+    const mins = now.getHours() * 60 + now.getMinutes();
+    const isOpen = mins >= open && mins < close;
+    openChip.textContent = isOpen
+      ? `Open now · closes ${openChip.dataset.close.replace(":", ":")}`
+      : `Closed now · opens ${openChip.dataset.open}`;
+    openChip.textContent = isOpen
+      ? `Open now · till ${formatTime(close)}`
+      : `Closed · opens ${formatTime(open)}`;
+    openChip.classList.toggle("closed", !isOpen);
+  }
+  function formatTime(mins) {
+    const h24 = Math.floor(mins / 60);
+    const m = mins % 60;
+    const suffix = h24 >= 12 ? "PM" : "AM";
+    const h = h24 % 12 === 0 ? 12 : h24 % 12;
+    return `${h}:${String(m).padStart(2, "0")} ${suffix}`;
+  }
 
-    // Fill success summary
-    $("#bookingRef").textContent = ref;
-    $("#successSummary").innerHTML = [
-      ["Occasion", data.occasion],
-      ["Date", prettyDate(data.date)],
-      ["Session", data.session],
-      ["Guests", data.guests],
-      ["Name", data.name],
-      ["Phone", "+91 " + data.phone],
-    ].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+  /* ── Popular times chart ─────────────────────────────────── */
+  const ptChart = $("#ptChart");
+  if (ptChart) {
+    // Typical busyness 9am–9pm for a site-visit desk; evening peaks.
+    const busy = [18, 26, 34, 42, 48, 40, 33, 38, 52, 66, 74, 58];
+    const nowHour = new Date().getHours();
+    busy.forEach((value, i) => {
+      const bar = document.createElement("span");
+      bar.className = "bar";
+      const hour = 9 + i;
+      if (hour === nowHour) bar.classList.add("active");
+      bar.style.height = `${Math.max(10, value)}%`;
+      bar.title = `${formatTime(hour * 60)} — ${value < 40 ? "Not too busy" : value < 65 ? "A little busy" : "Busy"}`;
+      ptChart.appendChild(bar);
+    });
+    const ptDay = $("#ptDay");
+    if (ptDay) ptDay.textContent = new Date().toLocaleDateString("en-IN", { weekday: "long" });
 
-    // Prefilled WhatsApp confirmation message
-    const msg =
-      `Hi Arjuna Celebrations Hall! I just sent a booking request (Ref: ${ref}).\n` +
-      `Occasion: ${data.occasion}\nDate: ${prettyDate(data.date)}\n` +
-      `Session: ${data.session}\nGuests: ${data.guests}\nName: ${data.name}`;
-    $("#waConfirm").href =
-      "https://wa.me/919689902501?text=" + encodeURIComponent(msg);
-
-    // Persist locally (demo — no backend)
-    try {
-      const all = JSON.parse(localStorage.getItem("arjunaBookings") || "[]");
-      all.push({ ref, ...data, at: new Date().toISOString() });
-      localStorage.setItem("arjunaBookings", JSON.stringify(all));
-    } catch (_) { /* private mode etc. */ }
-
-    form.hidden = true;
-    successPanel.hidden = false;
-    successPanel.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "center" });
-  });
-
-  $("#resetForm").addEventListener("click", () => {
-    form.reset();
-    form.hidden = false;
-    successPanel.hidden = true;
-    $$(".field.error", form).forEach((f) => f.classList.remove("error"));
-    form.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "center" });
-  });
-
-  // Clear errors as the user types
-  $$("input, select, textarea", form).forEach((el) =>
-    el.addEventListener("input", () => clearError(el))
-  );
+    const ptLive = $("#ptLive");
+    if (ptLive) {
+      const hour = new Date().getHours();
+      const idx = Math.min(Math.max(hour - 9, 0), busy.length - 1);
+      const level = busy[idx] < 40 ? "Not too busy" : busy[idx] < 65 ? "A little busy" : "Busy";
+      ptLive.innerHTML = `<i></i>Live · ${level}`;
+    }
+  }
 
   /* ── Gallery lightbox ────────────────────────────────────── */
-  (function lightbox() {
-    const items = $$(".g-item");
-    if (!items.length) return;
-    const lb = $("#lightbox");
-    const lbImg = $("#lbImg");
-    const lbCaption = $("#lbCaption");
-    let idx = 0;
+  const galleryItems = $$(".gallery-item");
+  const lightbox = $("#lightbox");
+  const lbImg = $("#lbImg");
+  const lbCaption = $("#lbCaption");
+  let lbIndex = 0;
+  let lastFocused = null;
 
-    const IMAGES = items.map((it) => ({
-      src: $("img", it).src,
-      alt: $("img", it).alt,
-      caption: it.dataset.caption || "",
-    }));
+  function openLightbox(index) {
+    if (!lightbox || !galleryItems.length) return;
+    lbIndex = index;
+    lastFocused = document.activeElement;
+    paintLightbox();
+    lightbox.hidden = false;
+    requestAnimationFrame(() => lightbox.classList.add("open"));
+    document.body.style.overflow = "hidden";
+    $("#lbClose").focus();
+  }
+  function paintLightbox() {
+    const item = galleryItems[lbIndex];
+    lbImg.src = item.dataset.full;
+    lbImg.alt = item.dataset.caption || "";
+    lbCaption.textContent = `${item.dataset.caption} · ${lbIndex + 1} / ${galleryItems.length}`;
+  }
+  function closeLightbox() {
+    if (!lightbox) return;
+    lightbox.classList.remove("open");
+    document.body.style.overflow = "";
+    setTimeout(() => { lightbox.hidden = true; }, 220);
+    lastFocused?.focus?.();
+  }
+  function stepLightbox(dir) {
+    lbIndex = (lbIndex + dir + galleryItems.length) % galleryItems.length;
+    paintLightbox();
+  }
 
-    function show(i) {
-      idx = (i + IMAGES.length) % IMAGES.length;
-      const im = IMAGES[idx];
-      lbImg.src = im.src;
-      lbImg.alt = im.alt;
-      lbCaption.textContent = im.caption;
-    }
-    function open(i) {
-      show(i);
-      lb.hidden = false;
-      document.body.style.overflow = "hidden";
-      $("#lbClose").focus();
-    }
-    function close() {
-      lb.hidden = true;
-      document.body.style.overflow = "";
-    }
-
-    items.forEach((it, i) => it.addEventListener("click", () => open(i)));
-    $("#lbClose").addEventListener("click", close);
-    $("#lbPrev").addEventListener("click", () => show(idx - 1));
-    $("#lbNext").addEventListener("click", () => show(idx + 1));
-    lb.addEventListener("click", (e) => { if (e.target === lb) close(); });
-    document.addEventListener("keydown", (e) => {
-      if (lb.hidden) return;
-      if (e.key === "Escape") close();
-      if (e.key === "ArrowLeft") show(idx - 1);
-      if (e.key === "ArrowRight") show(idx + 1);
+  galleryItems.forEach((item, i) => {
+    item.tabIndex = 0;
+    item.setAttribute("role", "button");
+    item.setAttribute("aria-label", `View photo: ${item.dataset.caption}`);
+    item.addEventListener("click", () => openLightbox(i));
+    item.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLightbox(i); }
     });
-  })();
+  });
+  if (lightbox) {
+    $("#lbClose").addEventListener("click", closeLightbox);
+    $("#lbPrev").addEventListener("click", () => stepLightbox(-1));
+    $("#lbNext").addEventListener("click", () => stepLightbox(1));
+    lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLightbox(); });
+  }
+
+  /* ── Venue tour slideshow ────────────────────────────────── */
+  const tourOpen = $("#tourOpen");
+  const tourModal = $("#tourModal");
+  const tourImg = $("#tourImg");
+  const tourCaption = $("#tourCaption");
+  const tourBar = $("#tourBar");
+  const tourToggle = $("#tourToggle");
+  const tourClose = $("#tourClose");
+
+  const TOUR = [
+    { src: "images/gallery-entrance.jpg", caption: "Entrance & welcome desk" },
+    { src: "images/hero.jpg", caption: "Main hall, dressed for the evening" },
+    { src: "images/gallery-mandap.jpg", caption: "Floral mandap on stage" },
+    { src: "images/gallery-sangeet.jpg", caption: "Sangeet stage, sound & light" },
+    { src: "images/gallery-tables.jpg", caption: "Banquet layout for 400" },
+    { src: "images/gallery-haldi.jpg", caption: "Daytime haldi corner" }
+  ];
+  const SLIDE_MS = 4000;
+  let tourIdx = 0;
+  let tourTimer = null;
+  let tourPlaying = false;
+  let tourStart = 0;
+
+  function paintTour() {
+    const slide = TOUR[tourIdx];
+    tourImg.src = slide.src;
+    tourImg.alt = slide.caption;
+    tourCaption.textContent = slide.caption;
+  }
+  function startTour() {
+    if (!tourModal) return;
+    tourIdx = 0;
+    paintTour();
+    tourModal.hidden = false;
+    requestAnimationFrame(() => tourModal.classList.add("open"));
+    document.body.style.overflow = "hidden";
+    tourClose.focus();
+    playTour();
+  }
+  function playTour() {
+    clearInterval(tourTimer);
+    tourPlaying = true;
+    tourToggle.textContent = "Pause";
+    tourStart = performance.now();
+    tourBar.style.width = "0%";
+    tourBar.style.transition = "none";
+    requestAnimationFrame(() => {
+      tourBar.style.transition = `width ${SLIDE_MS}ms linear`;
+      tourBar.style.width = "100%";
+    });
+    tourTimer = setInterval(() => {
+      tourIdx = (tourIdx + 1) % TOUR.length;
+      paintTour();
+      tourBar.style.transition = "none";
+      tourBar.style.width = "0%";
+      requestAnimationFrame(() => {
+        tourBar.style.transition = `width ${SLIDE_MS}ms linear`;
+        tourBar.style.width = "100%";
+      });
+    }, SLIDE_MS);
+  }
+  function pauseTour() {
+    clearInterval(tourTimer);
+    tourPlaying = false;
+    tourToggle.textContent = "Play";
+    tourBar.style.transition = "none";
+  }
+  function closeTour() {
+    if (!tourModal) return;
+    pauseTour();
+    tourModal.classList.remove("open");
+    document.body.style.overflow = "";
+    setTimeout(() => { tourModal.hidden = true; }, 220);
+    tourOpen?.focus();
+  }
+  if (tourOpen && tourModal) {
+    tourOpen.addEventListener("click", startTour);
+    tourOpen.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); startTour(); }
+    });
+    tourClose.addEventListener("click", closeTour);
+    tourToggle.addEventListener("click", () => (tourPlaying ? pauseTour() : playTour()));
+    tourModal.addEventListener("click", (e) => { if (e.target === tourModal) closeTour(); });
+  }
+
+  /* ── Global keyboard shortcuts for open modals ───────────── */
+  document.addEventListener("keydown", (e) => {
+    if (lightbox && !lightbox.hidden) {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") stepLightbox(-1);
+      if (e.key === "ArrowRight") stepLightbox(1);
+    }
+    if (tourModal && !tourModal.hidden && e.key === "Escape") closeTour();
+  });
+
+  /* ── Dashboard login hand-off (demo) ─────────────────────── */
+  // The Login button points at dashboard.html; nothing else to wire here.
 })();
