@@ -61,7 +61,8 @@ export function DashboardShell({
                 <Badge variant="danger" className="text-[10px]">Suspended</Badge>
               )}
             </div>
-            <p className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            {/* div (not p): Stars renders divs, which are invalid inside <p> */}
+            <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               <span>{subtitle ?? currentUser?.city}</span>
               {!!currentUser?.rating && currentUser.ratingCount ? (
                 <>
@@ -70,7 +71,7 @@ export function DashboardShell({
                   <span>{currentUser.rating} ({currentUser.ratingCount})</span>
                 </>
               ) : null}
-            </p>
+            </div>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">{actions}</div>

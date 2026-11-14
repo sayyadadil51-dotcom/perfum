@@ -580,11 +580,14 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
       if (ratePerKg > market * 3 || ratePerKg < market * 0.2)
         return fail(`Rate looks off. Today's ${listing.category} rate is ₹${market}/kg.`);
       if (!pickupDate) return fail('Choose a pickup date you can commit to');
-      if (state.offers.some((o) => o.listingId === listingId && o.buyerId === currentUser.id && o.status === 'pending'))
-        return fail('You already have a pending offer on this listing');
+      // One live offer per dealer per listing — re-submitting updates it instead of
+      // erroring, so a dealer can revise their rate before the seller responds.
+      const existing = state.offers.find(
+        (o) => o.listingId === listingId && o.buyerId === currentUser.id && o.status === 'pending',
+      );
 
       const offer: Offer = {
-        id: uid('of'),
+        id: existing?.id ?? uid('of'),
         listingId,
         buyerId: currentUser.id,
         sellerId: listing.sellerId,
@@ -593,19 +596,21 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
         message: message.trim(),
         pickupDate,
         status: 'pending',
-        createdAt: new Date().toISOString(),
+        createdAt: existing?.createdAt ?? new Date().toISOString(),
       };
       setState((s) => ({
         ...s,
-        offers: [offer, ...s.offers],
+        offers: existing ? s.offers.map((o) => (o.id === existing.id ? offer : o)) : [offer, ...s.offers],
         listings: s.listings.map((l) =>
-          l.id === listingId ? { ...l, offerCount: l.offerCount + 1, updatedAt: new Date().toISOString() } : l,
+          l.id === listingId && !existing
+            ? { ...l, offerCount: l.offerCount + 1, updatedAt: new Date().toISOString() }
+            : l,
         ),
       }));
       pushNotification({
         userId: listing.sellerId,
         kind: 'offer',
-        title: `New offer on ${listing.title}`,
+        title: existing ? `Updated offer on ${listing.title}` : `New offer on ${listing.title}`,
         body: `${currentUser.businessName ?? currentUser.name} offered ₹${ratePerKg}/kg.`,
         href: `/seller/listings/${listingId}`,
       });

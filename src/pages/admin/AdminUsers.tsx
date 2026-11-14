@@ -17,7 +17,7 @@ import { StatusBadge, Stars } from '@/components/StatusBadge';
 import { EmptyState } from '@/components/ui/misc';
 import { useAppStore } from '@/context/AppStore';
 import { useToast } from '@/context/ToastContext';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { downloadFile, formatCurrency, formatDate } from '@/lib/utils';
 import type { Profile } from '@/lib/types';
 
 export default function AdminUsers() {
@@ -53,12 +53,8 @@ export default function AdminUsers() {
         ].join(','),
       ),
     ].join('\n');
-    const blob = new Blob([rows], { type: 'text/csv;charset=utf-8' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'scrapkart-users.csv';
-    a.click();
-    URL.revokeObjectURL(a.href);
+    if (!downloadFile('scrapkart-users.csv', rows, 'text/csv;charset=utf-8'))
+      toast.error('Download blocked', 'Please allow downloads for this site and try again.');
   };
 
   const doSuspend = () => {

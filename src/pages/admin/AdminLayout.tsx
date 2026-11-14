@@ -16,6 +16,7 @@ import { DashboardShell, type DashNavItem } from '@/components/DashboardShell';
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/context/AppStore';
 import { useToast } from '@/context/ToastContext';
+import { downloadFile } from '@/lib/utils';
 
 export default function AdminLayout() {
   const { state, currentUser, resetDemo } = useAppStore();
@@ -47,13 +48,13 @@ export default function AdminLayout() {
       rates: state.rates.map(({ history, ...r }) => r),
       disputes: state.disputes,
     };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `scrapkart-export-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(a.href);
-    toast.success('Export downloaded');
+    const ok = downloadFile(
+      `scrapkart-export-${new Date().toISOString().slice(0, 10)}.json`,
+      JSON.stringify(data, null, 2),
+      'application/json',
+    );
+    if (ok) toast.success('Export downloaded');
+    else toast.error('Download blocked', 'Please allow downloads for this site and try again.');
   };
 
   return (

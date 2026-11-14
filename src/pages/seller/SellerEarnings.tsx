@@ -17,11 +17,13 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { CategoryIcon } from '@/components/CategoryIcon';
 import { EmptyState } from '@/components/ui/misc';
 import { useAppStore } from '@/context/AppStore';
+import { useToast } from '@/context/ToastContext';
 import { categoryName } from '@/data/categories';
-import { formatCurrency, formatDate, formatWeight } from '@/lib/utils';
+import { downloadFile, formatCurrency, formatDate, formatWeight } from '@/lib/utils';
 
 export default function SellerEarnings() {
   const { state, currentUser, lang } = useAppStore();
+  const toast = useToast();
   const myOrders = state.orders.filter((o) => o.sellerId === currentUser?.id);
   const paid = myOrders.filter((o) => o.status === 'paid');
   const payments = state.payments.filter((p) => p.userId === currentUser?.id);
@@ -62,12 +64,9 @@ export default function SellerEarnings() {
         ].join(','),
       ),
     ].join('\n');
-    const blob = new Blob([rows], { type: 'text/csv;charset=utf-8' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'scrapkart-earnings.csv';
-    a.click();
-    URL.revokeObjectURL(a.href);
+    if (downloadFile('scrapkart-earnings.csv', rows, 'text/csv;charset=utf-8'))
+      toast.success('Statement downloaded');
+    else toast.error('Download blocked', 'Please allow downloads for this site and try again.');
   };
 
   return (

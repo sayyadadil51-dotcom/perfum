@@ -222,12 +222,18 @@ export default function BuyerListingDetail() {
                     className="w-full"
                     size="lg"
                     onClick={() => {
-                      setRate(String(listing.askingPrice ?? marketRate));
+                      if (myOffer) {
+                        setRate(String(myOffer.ratePerKg));
+                        setPickupDate(myOffer.pickupDate);
+                      } else {
+                        setRate(String(listing.askingPrice ?? marketRate));
+                      }
+                      setErrors({});
                       setOfferOpen(true);
                     }}
                     disabled={!canBid}
                   >
-                    <Handshake className="h-5 w-5" /> Send an offer
+                    <Handshake className="h-5 w-5" /> {myOffer ? 'View your pending offer' : 'Send an offer'}
                   </Button>
                   <Button
                     variant="outline"
@@ -387,8 +393,8 @@ export default function BuyerListingDetail() {
           </div>
           <div className="flex gap-2">
             <Button variant="outline" className="flex-1" onClick={() => setOfferOpen(false)}>Cancel</Button>
-            <Button className="flex-1" onClick={submitOffer} disabled={!!myOffer}>
-              {myOffer ? 'Offer already sent' : 'Send offer'}
+            <Button className="flex-1" onClick={submitOffer}>
+              {myOffer ? 'Update my offer' : 'Send offer'}
             </Button>
           </div>
         </DialogContent>

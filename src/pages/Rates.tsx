@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CategoryIcon } from '@/components/CategoryIcon';
 import { useAppStore } from '@/context/AppStore';
+import { useToast } from '@/context/ToastContext';
 import { CATEGORIES, categoryName } from '@/data/categories';
-import { cn, formatCurrency, formatDate } from '@/lib/utils';
+import { cn, downloadFile, formatCurrency, formatDate } from '@/lib/utils';
 
 /** Tiny inline sparkline for the last 14 days of rates. */
 function Sparkline({ data, up }: { data: { date: string; rate: number }[]; up: boolean }) {
@@ -40,6 +41,7 @@ function Sparkline({ data, up }: { data: { date: string; rate: number }[]; up: b
 
 export default function Rates() {
   const { state, lang, t } = useAppStore();
+  const toast = useToast();
   const [q, setQ] = React.useState('');
   const [refreshing, setRefreshing] = React.useState(false);
   const [updatedAt, setUpdatedAt] = React.useState(Date.now());
@@ -83,12 +85,13 @@ export default function Rates() {
           `${categoryName(r.category, 'en')},${r.ratePerKg},${r.changePct},${r.updatedAt.slice(0, 10)}`,
       ),
     ].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `scrapkart-rates-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(a.href);
+    const ok = downloadFile(
+      `scrapkart-rates-${new Date().toISOString().slice(0, 10)}.csv`,
+      csv,
+      'text/csv;charset=utf-8',
+    );
+    if (ok) toast.success('Rate card downloaded');
+    else toast.error('Download blocked', 'Please allow downloads for this site and try again.');
   };
 
   return (

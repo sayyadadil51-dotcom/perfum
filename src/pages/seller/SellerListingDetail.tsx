@@ -243,10 +243,10 @@ export default function SellerListingDetail() {
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
                           <p className="truncate text-sm font-semibold">{buyer?.businessName ?? buyer?.name}</p>
-                          <p className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                          <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
                             <Stars value={Math.round(buyer?.rating ?? 0)} size="sm" />
                             {buyer?.rating?.toFixed(1) ?? 'New'} · {buyer?.completedOrders ?? 0} pickups
-                          </p>
+                          </div>
                         </div>
                         <StatusBadge status={o.status} withDot={false} />
                       </div>

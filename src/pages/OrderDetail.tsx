@@ -42,7 +42,7 @@ import { EmptyState } from '@/components/ui/misc';
 import { useAppStore } from '@/context/AppStore';
 import { useToast } from '@/context/ToastContext';
 import { categoryName, co2Saved } from '@/data/categories';
-import { cn, formatCurrency, formatDate, formatWeight, timeAgo } from '@/lib/utils';
+import { cn, downloadFile, formatCurrency, formatDate, formatWeight, timeAgo } from '@/lib/utils';
 import type { PaymentMode, TimeSlot } from '@/lib/types';
 
 const SLOTS: { value: TimeSlot; label: string; time: string }[] = [
@@ -198,12 +198,8 @@ export default function OrderDetail() {
       'Thank you for recycling with ScrapKart.',
       'help@scrapkart.in · +91 90000 00001',
     ].join('\n');
-    const blob = new Blob([lines], { type: 'text/plain;charset=utf-8' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `scrapkart-receipt-${order.code}.txt`;
-    a.click();
-    URL.revokeObjectURL(a.href);
+    if (!downloadFile(`scrapkart-receipt-${order.code}.txt`, lines))
+      toast.error('Download blocked', 'Please allow downloads for this site and try again.');
   };
 
   return (

@@ -93,9 +93,9 @@ export default function AdminBuyers() {
           </div>
           <div className="text-right text-[11px] text-muted-foreground">
             <p>{orders.length} orders · {formatCurrency(spent)}</p>
-            <p className="flex items-center justify-end gap-1">
+            <div className="flex items-center justify-end gap-1">
               <Stars value={Math.round(b.rating ?? 0)} size="sm" /> {b.rating?.toFixed(1) ?? 'New'}
-            </p>
+            </div>
           </div>
         </div>
 

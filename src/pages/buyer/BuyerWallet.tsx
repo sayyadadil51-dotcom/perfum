@@ -25,11 +25,13 @@ import { SectionCard, StatCard, PageHeader } from '@/components/DashboardShell';
 import { EmptyState, Progress } from '@/components/ui/misc';
 import { CategoryIcon } from '@/components/CategoryIcon';
 import { useAppStore } from '@/context/AppStore';
+import { useToast } from '@/context/ToastContext';
 import { categoryName } from '@/data/categories';
-import { formatCurrency, formatDate, formatWeight } from '@/lib/utils';
+import { downloadFile, formatCurrency, formatDate, formatWeight } from '@/lib/utils';
 
 export default function BuyerWallet() {
   const { state, currentUser, lang } = useAppStore();
+  const toast = useToast();
   const myOrders = state.orders.filter((o) => o.buyerId === currentUser?.id);
   const paidOrders = myOrders.filter((o) => o.status === 'paid');
   const spent = paidOrders.reduce((a, o) => a + o.amount, 0);
@@ -62,12 +64,9 @@ export default function BuyerWallet() {
         return [o.code, p.createdAt.slice(0, 10), categoryName(o.category, 'en'), o.finalWeightKg ?? o.declaredWeightKg, p.amount, p.mode, p.reference].join(',');
       }),
     ].join('\n');
-    const blob = new Blob([rows], { type: 'text/csv;charset=utf-8' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'scrapkart-wallet-statement.csv';
-    a.click();
-    URL.revokeObjectURL(a.href);
+    if (downloadFile('scrapkart-wallet-statement.csv', rows, 'text/csv;charset=utf-8'))
+      toast.success('Statement downloaded');
+    else toast.error('Download blocked', 'Please allow downloads for this site and try again.');
   };
 
   return (

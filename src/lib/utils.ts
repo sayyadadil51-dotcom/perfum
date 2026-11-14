@@ -104,3 +104,27 @@ export function isValidPhone(phone: string) {
 export function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
 }
+
+/**
+ * Trigger a client-side file download without a server.
+ * Returns false instead of throwing when the environment blocks it
+ * (older mobile in-app browsers, private-mode Safari, tests).
+ */
+export function downloadFile(filename: string, contents: string, mime = 'text/plain;charset=utf-8') {
+  try {
+    const blob = new Blob([contents], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    // Revoke on the next tick so Safari has time to start the download.
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    return true;
+  } catch {
+    return false;
+  }
+}
