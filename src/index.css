@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design tokens ───────────────────────────────────────────────────────── */
+@layer base {
+  :root {
+    --background: 60 33% 98%;      /* warm paper */
+    --foreground: 155 25% 13%;     /* deep forest ink */
+    --card: 0 0% 100%;
+    --card-foreground: 155 25% 13%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 155 25% 13%;
+    --primary: 142 71% 33%;        /* leaf green */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 145 45% 94%;      /* mint wash */
+    --secondary-foreground: 150 45% 22%;
+    --muted: 60 16% 94%;
+    --muted-foreground: 150 8% 42%;
+    --accent: 32 60% 93%;          /* sandy clay */
+    --accent-foreground: 28 50% 26%;
+    --destructive: 0 72% 48%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 140 14% 88%;
+    --input: 140 14% 88%;
+    --ring: 142 71% 33%;
+    --radius: 0.85rem;
+  }
+
+  .dark {
+    --background: 155 28% 7%;
+    --foreground: 60 25% 96%;
+    --card: 155 22% 10%;
+    --card-foreground: 60 25% 96%;
+    --popover: 155 22% 10%;
+    --popover-foreground: 60 25% 96%;
+    --primary: 142 62% 45%;
+    --primary-foreground: 155 40% 8%;
+    --secondary: 155 18% 16%;
+    --secondary-foreground: 60 25% 92%;
+    --muted: 155 16% 15%;
+    --muted-foreground: 140 10% 66%;
+    --accent: 32 32% 18%;
+    --accent-foreground: 34 60% 85%;
+    --destructive: 0 62% 46%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 155 15% 20%;
+    --input: 155 15% 22%;
+    --ring: 142 62% 45%;
+  }
+
+  * {
+    @apply border-border;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+    /* subtle eco texture */
+    background-image: radial-gradient(circle at 1px 1px, hsl(var(--primary) / 0.06) 1px, transparent 0);
+    background-size: 22px 22px;
+  }
+
+  ::selection {
+    @apply bg-primary/20;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display tracking-tight;
+  }
+
+  /* Accessible focus ring everywhere */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Nicer default scrollbars */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { @apply rounded-full bg-border; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-muted-foreground/40; }
+
+  /* Hide number input spinners for cleaner mobile forms */
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type='number'] { -moz-appearance: textfield; }
+}
+
+@layer components {
+  .card-surface {
+    @apply rounded-2xl border border-border/70 bg-card shadow-soft;
+  }
+  .gradient-leaf {
+    background-image: linear-gradient(135deg, hsl(142 71% 33%) 0%, hsl(160 70% 26%) 55%, hsl(170 55% 22%) 100%);
+  }
+  .text-gradient {
+    @apply bg-gradient-to-br from-leaf-700 via-leaf-600 to-emerald-500 bg-clip-text text-transparent;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-background/70 px-3 py-1 text-xs font-medium text-muted-foreground;
+  }
+  .skeleton {
+    @apply relative overflow-hidden rounded-lg bg-muted;
+  }
+  .skeleton::after {
+    @apply absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent content-[''];
+  }
+  .dark .skeleton::after {
+    @apply via-white/10;
+  }
+}
+
+/* ── Leaflet overrides (map pin picker) ──────────────────────────────────── */
+.leaflet-container {
+  font-family: inherit;
+  background: hsl(var(--muted));
+  z-index: 0;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 0.75rem;
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
