@@ -152,8 +152,27 @@ API; the exact pin is only revealed to the dealer whose offer is accepted.
 
 ## 🚀 Deploy
 
-**Vercel** — import the repo; `vercel.json` already sets the Vite framework, SPA rewrites and
-cache headers. Add the env vars in *Settings → Environment Variables* if using Supabase.
+**Vercel — one click**
+
+1. <https://vercel.com/new> → *Import Git Repository* → `sayyadadil51-dotcom/perfum`.
+2. Leave every setting on auto-detect. `vercel.json` already pins the Vite framework, the
+   `npm run build` command, `dist` output, the SPA rewrite (`/(.*) → /index.html`), immutable
+   caching for `/assets/*` and the security headers. Root directory stays `.` (the app lives at
+   the repo root; `legacy/` is ignored by the build).
+3. Press **Deploy**. No environment variables are required — with none set the app runs on its
+   built-in localStorage demo backend, so the deployed URL is fully clickable straight away
+   (demo logins are on the sign-in page).
+4. *Optional, for the real backend:* create a Supabase project, run `supabase/schema.sql` then
+   `supabase/seed.sql` in the SQL editor, copy the project URL + anon key into
+   *Settings → Environment Variables* as `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`, and
+   redeploy. Add `VITE_RAZORPAY_KEY_ID` only when wiring live payments.
+
+Because the project is a Vite SPA, a plain deploy must keep the catch-all rewrite to
+`index.html`; without it, deep links such as `/buyer/orders/o_5001` return 404 on refresh.
+
+```bash
+npm i -g vercel && vercel --prod   # CLI alternative, from the repo root
+```
 
 **Netlify** — `netlify.toml` provides the build command, publish dir and SPA redirect.
 
